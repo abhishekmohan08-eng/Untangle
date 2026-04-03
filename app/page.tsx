@@ -114,7 +114,7 @@ export default function UntanglePage() {
               What's weighing on your <em style={styles.titleEm}>mind</em> right now?
             </h1>
             <p style={styles.sub}>
-              This is your safe space. Allow yourself to be open — clarity starts here.
+              This is your safe space. Let it all out.....
             </p>
             <textarea
               style={styles.textarea}
