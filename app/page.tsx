@@ -58,9 +58,9 @@ export default function LandingPage() {
       <section style={styles.testimonialSection}>
         <div style={styles.sectionInner}>
           <blockquote style={styles.quote}>
-            &ldquo;It&apos;s effective and quick — I felt lighter after just 3 minutes.&rdquo;
+            &ldquo;I loved how it filtered the noise and guided me to focus on the one thing that needed my attention. Quick, clear, and surprisingly powerful.&rdquo;
           </blockquote>
-          <p style={styles.quoteAuthor}>— First user</p>
+          <p style={styles.quoteAuthor}>— Priya</p>
         </div>
       </section>
 
