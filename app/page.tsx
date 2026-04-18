@@ -90,7 +90,7 @@ export default function LandingPage() {
         <div style={styles.coachInner}>
           <div style={styles.coachPhoto}>
             <img
-              src="/abhi.png"
+              src="/abhi.PNG"
               alt="Abhi Mohan"
               style={styles.photo}
             />
