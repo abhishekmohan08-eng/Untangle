@@ -24,7 +24,7 @@ export default function LandingPage() {
           <div style={styles.heroLeft}>
             <div style={styles.badge}>3 minutes to clarity</div>
             <h1 style={styles.heroTitle}>
-              When your head is full,<br />
+              When your head is tangled with a million thoughts,<br />
               <em style={styles.heroEm}>clarity starts here.</em>
             </h1>
             <p style={styles.heroSub}>
@@ -60,7 +60,7 @@ export default function LandingPage() {
           <blockquote style={styles.quote}>
             &ldquo;I loved how it filtered the noise and guided me to focus on the one thing that needed my attention. Quick, clear, and surprisingly powerful.&rdquo;
           </blockquote>
-          <p style={styles.quoteAuthor}>— Priya</p>
+          <p style={styles.quoteAuthor}>— First user</p>
         </div>
       </section>
 
