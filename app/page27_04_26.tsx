@@ -1,18 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
 
 export default function LandingPage() {
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768);
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
-  }, []);
-
   return (
     <div style={styles.page}>
       {/* Nav */}
@@ -30,18 +20,11 @@ export default function LandingPage() {
 
       {/* Hero */}
       <section style={styles.hero}>
-        <div style={{
-          ...styles.heroInner,
-          flexDirection: isMobile ? "column" : "row",
-          gap: isMobile ? "2rem" : "4rem",
-        }}>
-          <div style={{ flex: 1 }}>
+        <div style={styles.heroInner}>
+          <div style={styles.heroLeft}>
             <div style={styles.badge}>3 minutes to clarity</div>
-            <h1 style={{
-              ...styles.heroTitle,
-              fontSize: isMobile ? "36px" : "52px",
-            }}>
-              When your head is full,<br />
+            <h1 style={styles.heroTitle}>
+              When your head is Tangled with a million thoughts,<br />
               <em style={styles.heroEm}>clarity starts here.</em>
             </h1>
             <p style={styles.heroSub}>
@@ -52,7 +35,7 @@ export default function LandingPage() {
             </Link>
             <p style={styles.heroNote}>Free to try. No account needed.</p>
           </div>
-          <div style={{ flex: 1 }}>
+          <div style={styles.heroRight}>
             <div style={styles.heroCard}>
               <div style={styles.cardLabel}>Signal — real things worth your attention</div>
               <div style={styles.tagRow}>
@@ -74,33 +57,19 @@ export default function LandingPage() {
       {/* Testimonial */}
       <section style={styles.testimonialSection}>
         <div style={styles.sectionInner}>
-          <blockquote style={{
-            ...styles.quote,
-            fontSize: isMobile ? "20px" : "28px",
-          }}>
+          <blockquote style={styles.quote}>
             &ldquo;I loved how it filtered the noise and guided me to focus on the one thing that needed my attention. Quick, clear, and surprisingly powerful.&rdquo;
           </blockquote>
-          <p style={styles.quoteAuthor}>— Priya</p>
+          <p style={styles.quoteAuthor}>— First user</p>
         </div>
       </section>
 
       {/* How it works */}
       <section style={styles.section}>
-        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-          <p style={{ ...styles.sectionEyebrow, textAlign: "center" }}>How it works</p>
-          <h2 style={{
-            ...styles.sectionTitle,
-            fontSize: isMobile ? "30px" : "42px",
-            textAlign: "center",
-          }}>
-            A real coaching session,<br />
-            <em style={styles.heroEm}>in 3 minutes.</em>
-          </h2>
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr",
-            gap: isMobile ? "1.5rem" : "2rem",
-          }}>
+        <div style={styles.sectionInner}>
+          <p style={styles.sectionEyebrow}>How it works</p>
+          <h2 style={styles.sectionTitle}>A real coaching session,<br /><em style={styles.heroEm}>in 3 minutes.</em></h2>
+          <div style={styles.stepsGrid}>
             {[
               { step: "01", title: "Pour it all out", desc: "Write everything that's on your mind. No filters, no judgement. This is your safe space." },
               { step: "02", title: "Signal vs Noise", desc: "Untangle separates what genuinely deserves your attention from the mental clutter you can let go of." },
@@ -118,31 +87,17 @@ export default function LandingPage() {
 
       {/* Coach section */}
       <section style={styles.coachSection}>
-        <div style={{
-          ...styles.coachInner,
-          flexDirection: isMobile ? "column" : "row",
-          gap: isMobile ? "2rem" : "4rem",
-        }}>
-          <div style={{
-            borderRadius: 20,
-            overflow: "hidden",
-            aspectRatio: isMobile ? "1" : "3/4",
-            width: isMobile ? "100%" : "360px",
-            maxWidth: isMobile ? "360px" : "360px",
-            flexShrink: 0,
-          }}>
+        <div style={styles.coachInner}>
+          <div style={styles.coachPhoto}>
             <img
               src="/abhi.PNG"
               alt="Abhi Mohan"
               style={styles.photo}
             />
           </div>
-          <div style={{ flex: 1 }}>
+          <div style={styles.coachText}>
             <p style={styles.sectionEyebrow}>The coach behind Untangle</p>
-            <h2 style={{
-              ...styles.coachName,
-              fontSize: isMobile ? "28px" : "36px",
-            }}>Abhi Mohan</h2>
+            <h2 style={styles.coachName}>Abhi Mohan</h2>
             <p style={styles.coachCred}>Jay Shetty School of Life Certified Life Coach</p>
             <p style={styles.coachBio}>
               &ldquo;As a life coach, the moment I love most is watching someone&apos;s shoulders drop. That shift when the noise clears and they can finally see what actually matters. I built Untangle because that feeling shouldn&apos;t be reserved for a coaching session. Every overwhelmed mind deserves a moment of clarity — quickly, privately, and on their own terms.&rdquo;
@@ -155,12 +110,9 @@ export default function LandingPage() {
       </section>
 
       {/* Final CTA */}
-      <section style={{ ...styles.ctaSection, padding: isMobile ? "4rem 2rem" : "6rem 2rem" }}>
+      <section style={styles.ctaSection}>
         <div style={styles.sectionInner}>
-          <h2 style={{
-            ...styles.ctaTitle,
-            fontSize: isMobile ? "36px" : "48px",
-          }}>
+          <h2 style={styles.ctaTitle}>
             Your mind deserves<br />
             <em style={styles.heroEm}>this moment.</em>
           </h2>
@@ -173,12 +125,7 @@ export default function LandingPage() {
 
       {/* Footer */}
       <footer style={styles.footer}>
-        <div style={{
-          ...styles.footerInner,
-          flexDirection: isMobile ? "column" : "row",
-          gap: isMobile ? "1rem" : "0",
-          textAlign: isMobile ? "center" : "left",
-        }}>
+        <div style={styles.footerInner}>
           <div style={styles.brand}>
             <div style={styles.brandDot} />
             <span style={styles.brandName}>Untangle</span>
@@ -248,9 +195,12 @@ const styles: Record<string, React.CSSProperties> = {
   heroInner: {
     maxWidth: 1100,
     margin: "0 auto",
-    display: "flex",
+    display: "grid",
+    gridTemplateColumns: "1fr 1fr",
+    gap: "4rem",
     alignItems: "center",
   },
+  heroLeft: {},
   badge: {
     display: "inline-block",
     background: "#e8f0ee",
@@ -265,6 +215,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   heroTitle: {
     fontFamily: "'Playfair Display', serif",
+    fontSize: 52,
     fontWeight: 400,
     lineHeight: 1.2,
     marginBottom: "1.5rem",
@@ -300,6 +251,7 @@ const styles: Record<string, React.CSSProperties> = {
     color: "#9a9a94",
     marginTop: "1rem",
   },
+  heroRight: {},
   heroCard: {
     background: "white",
     border: "1.5px solid #e8e3da",
@@ -351,6 +303,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   quote: {
     fontFamily: "'Playfair Display', serif",
+    fontSize: 28,
     fontWeight: 400,
     fontStyle: "italic",
     color: "white",
@@ -375,10 +328,16 @@ const styles: Record<string, React.CSSProperties> = {
   },
   sectionTitle: {
     fontFamily: "'Playfair Display', serif",
+    fontSize: 42,
     fontWeight: 400,
     lineHeight: 1.3,
     marginBottom: "3rem",
     color: "#1a1a18",
+  },
+  stepsGrid: {
+    display: "grid",
+    gridTemplateColumns: "1fr 1fr 1fr",
+    gap: "2rem",
   },
   stepCard: {
     background: "white",
@@ -415,8 +374,15 @@ const styles: Record<string, React.CSSProperties> = {
   coachInner: {
     maxWidth: 1000,
     margin: "0 auto",
-    display: "flex",
+    display: "grid",
+    gridTemplateColumns: "360px 1fr",
+    gap: "4rem",
     alignItems: "center",
+  },
+  coachPhoto: {
+    borderRadius: 20,
+    overflow: "hidden",
+    aspectRatio: "3/4",
   },
   photo: {
     width: "100%",
@@ -425,8 +391,10 @@ const styles: Record<string, React.CSSProperties> = {
     objectPosition: "top",
     display: "block",
   },
+  coachText: {},
   coachName: {
     fontFamily: "'Playfair Display', serif",
+    fontSize: 36,
     fontWeight: 400,
     color: "#1a1a18",
     marginBottom: "0.5rem",
@@ -454,10 +422,12 @@ const styles: Record<string, React.CSSProperties> = {
     lineHeight: 1.6,
   },
   ctaSection: {
+    padding: "6rem 2rem",
     textAlign: "center",
   },
   ctaTitle: {
     fontFamily: "'Playfair Display', serif",
+    fontSize: 48,
     fontWeight: 400,
     lineHeight: 1.3,
     marginBottom: "1.5rem",
