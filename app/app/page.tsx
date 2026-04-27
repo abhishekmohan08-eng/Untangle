@@ -133,6 +133,7 @@ export default function UntanglePage() {
             >
               {stage === "loading-analysis" ? "Untangling…" : "Untangle this →"}
             </button>
+            <p style={styles.disclaimer}>🔒 Nothing you write is stored or used for training. Ever.</p>
           </div>
         )}
 
@@ -178,8 +179,7 @@ export default function UntanglePage() {
               disabled={stage === "loading-reflection"}
             >
               {stage === "loading-reflection" ? "Creating reflection…" : "Continue →"}
-            </button>
-            <p style={styles.disclaimer}>🔒 Nothing you write is stored or used for training. Ever.</p>
+            </button>            
           </div>
         )}
 
