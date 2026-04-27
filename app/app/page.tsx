@@ -179,6 +179,7 @@ export default function UntanglePage() {
             >
               {stage === "loading-reflection" ? "Creating reflection…" : "Continue →"}
             </button>
+            <p style={styles.disclaimer}>🔒 Nothing you write is stored or used for training. Ever.</p>
           </div>
         )}
 
@@ -237,6 +238,7 @@ const styles: Record<string, React.CSSProperties> = {
   sub: { fontSize: 15, color: "#5a5a55", fontWeight: 300, marginBottom: "2rem", lineHeight: 1.6 },
   textarea: { width: "100%", minHeight: 160, padding: "1.25rem", border: "1.5px solid #e8e3da", borderRadius: 12, background: "white", fontFamily: "'DM Sans', sans-serif", fontSize: 16, fontWeight: 300, color: "#1a1a18", lineHeight: 1.7, resize: "none", outline: "none", boxSizing: "border-box" },
   charHint: { fontSize: 12, color: "#9a9a94", marginTop: 6, marginBottom: 4 },
+  disclaimer: {  fontSize: 12,  color: "#9a9a94",  marginTop: 10,},
   errorBox: { background: "#fdf3ec", border: "1px solid #f0c4a0", borderRadius: 10, padding: "0.75rem 1rem", fontSize: 14, color: "#c4875a", marginTop: "0.75rem" },
   btnPrimary: { display: "inline-flex", alignItems: "center", gap: 8, marginTop: "1.25rem", padding: "14px 28px", background: "#4a7c6f", color: "white", border: "none", borderRadius: 100, fontFamily: "'DM Sans', sans-serif", fontSize: 15, fontWeight: 500, cursor: "pointer", letterSpacing: "0.2px" },
   btnDisabled: { opacity: 0.6, cursor: "not-allowed" },
