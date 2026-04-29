@@ -41,7 +41,7 @@ export default function LandingPage() {
               ...styles.heroTitle,
               fontSize: isMobile ? "36px" : "52px",
             }}>
-              When your head is is <em style={styles.heroEm}>tangled</em> with a million thoughts,<br />
+              When your head is <em style={styles.heroEm}>tangled</em> with a million thoughts,<br />
               <em style={styles.heroEm}>clarity starts here.</em>
             </h1>
             <p style={styles.heroSub}>
