@@ -143,12 +143,19 @@ export default function LandingPage() {
               ...styles.coachName,
               fontSize: isMobile ? "28px" : "36px",
             }}>Abhi Mohan</h2>
-            <p style={styles.coachCred}>Jay Shetty School of Life Certified Life Coach</p>
-            <p style={styles.coachBio}>
-              &ldquo;As a life coach, the moment I love most is watching someone&apos;s shoulders drop. That shift when the noise clears and they can finally see what actually matters. I built Untangle because that feeling shouldn&apos;t be reserved for a coaching session. Every overwhelmed mind deserves a moment of clarity — quickly, privately, and on their own terms.&rdquo;
-            </p>
-            <p style={styles.coachMission}>
-              A balanced, focused mind doesn&apos;t just perform better — it loves better.
+            <a
+              href="https://www.jayshettycoaching.com/coaches/abhishek-mohan"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm uppercase tracking-wider text-emerald-800 hover:text-emerald-600 underline underline-offset-4 transition-colors"
+            >
+              Jay Shetty Certification School Certified Life Coach
+            </a>
+          <p style={styles.coachBio}>
+            &ldquo;As a life coach, the moment I love most is watching someone&apos;s shoulders drop. That shift when the noise clears and they can finally see what actually matters. I built Untangle because that feeling shouldn&apos;t be reserved for a coaching session. Every overwhelmed mind deserves a moment of clarity — quickly, privately, and on their own terms.&rdquo;
+          </p>
+          <p style={styles.coachMission}>
+            A balanced, focused mind doesn&apos;t just perform better — it loves better.
             </p>
           </div>
         </div>
