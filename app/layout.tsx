@@ -39,12 +39,6 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
-
-export const metadata: Metadata = {
-  title: "Untangle",
-  description: "Find your clarity",
-};
-
 export default function RootLayout({
   children,
 }: Readonly<{
