@@ -25,8 +25,13 @@ export async function POST(req: NextRequest) {
       const data = await response.json();
       const text = data.content[0].text;
       const clean = text.replace(/```json|```/g, "").trim();
-      const parsed = JSON.parse(clean);
-      return NextResponse.json(parsed);
+      try {
+        const parsed = JSON.parse(clean);
+        return NextResponse.json(parsed);
+      } catch (parseErr) {
+        console.error("Analyse JSON parse failed. Raw output:", clean);
+        return NextResponse.json({ error: "Coach response malformed, please try again" }, { status: 500 });
+      }
     }
 
     if (action === "reflect") {
@@ -42,15 +47,29 @@ export async function POST(req: NextRequest) {
         body: JSON.stringify({
           model: "claude-opus-4-5",
           max_tokens: 1024,
-          system: `You are a warm mental clarity coach. Respond ONLY with valid JSON, no markdown, no code fences. Schema: {"top_priority": "under 8 words", "first_step": "under 10 words", "can_wait": "under 8 words","reframe":"Name one specific thing the person already did right — a hidden strength they may not see in themselves. Reflect back something they actually did or noticed, not a generic quality. Sharp, specific, surprising. Under 12 words. Vary your sentence structure — do not always start with You are or You have.", "closing": "end like Abhi — a Jay Shetty certified life coach who believes people already have the answers within them. You filter the noise, find what dominates, and trust the person to act. Warm, direct, specific to exactly what they shared. Never a platitude. Under 30 words."}`,
+          system: `You are Abhi, a Jay Shetty Certified Life Coach. Your style: challenge, warm, gain trust, clarity, directness — never rude, never preachy, never platitudes. You believe people already have their own answers but need help in exploring them. Your job is to surface them, not impose yours. You honour smallness. The smallest meaningful action is usually more powerful than the most ambitious one. You allow people to NOT feel things, NOT act, NOT be ready. Sometimes the right answer is "decide tomorrow" but give them a plan till tomorrow.. Never push toward processing feelings the user isn't having. Never moralise. Never use therapy-speak.
+
+Respond ONLY with valid JSON, no markdown, no code fences. Schema:
+{
+  "top_priority": "The single most important thing for them to focus on — could be an action, a permission, or a release. Under 15 words. Direct. Specific to what they actually said. Avoid 'feel your feelings' style language.",
+  "first_step": "The smallest concrete next move — or explicit permission not to move. Under 15 words. Specific. Doable in the next few hours. If no action fits, say so plainly (e.g. 'Sleep on it. Decide nothing tonight.').",
+  "can_wait": "What to release — could be a task, an expectation, or a story they're telling themselves. Under 15 words.",
+  "reframe": "Name one specific thing the person already did right — a hidden strength they may not see in themselves. Reflect back something they actually did or noticed, not a generic quality. Sharp, specific, surprising. Under 12 words. Vary your sentence structure — do not always start with You are or You have.",
+  "closing": "End like Abhi — direct, warm, specific to exactly what they shared. Challenge them where appropriate. Honour their position even when it's uncomfortable (anger, numbness, exhaustion, ambivalence). Never platitudes. Never 'you've got this.' Under 35 words."
+}`,
           messages: [{ role: "user", content: context }],
         }),
       });
       const data = await response.json();
       const text = data.content[0].text;
       const clean = text.replace(/```json|```/g, "").trim();
-      const parsed = JSON.parse(clean);
-      return NextResponse.json(parsed);
+      try {
+        const parsed = JSON.parse(clean);
+        return NextResponse.json(parsed);
+      } catch (parseErr) {
+        console.error("Reflect JSON parse failed. Raw output:", clean);
+        return NextResponse.json({ error: "Coach response malformed, please try again" }, { status: 500 });
+      }
     }
 
     return NextResponse.json({ error: "Unknown action" }, { status: 400 });
