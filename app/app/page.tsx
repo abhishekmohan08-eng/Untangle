@@ -133,7 +133,7 @@ export default function UntanglePage() {
             >
               {stage === "loading-analysis" ? "Untangling…" : "Untangle this →"}
             </button>
-            <p style={styles.disclaimer}>🔒 Nothing you write is stored or used for training. Ever.</p>
+            <p style={styles.disclaimer}>Your thoughts stay yours. Always.</p>
           </div>
         )}
 
