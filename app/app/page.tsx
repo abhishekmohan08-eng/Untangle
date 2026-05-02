@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import InstallPrompt from "@/app/components/InstallPrompt";
 
 type Stage = "dump" | "loading-analysis" | "analysis" | "loading-reflection" | "reflection";
 
@@ -209,7 +210,8 @@ export default function UntanglePage() {
               <div style={styles.cardLabel}>From your coach</div>
               <p style={styles.closingThought}>{reflection.closing}</p>
             </div>
-
+            <InstallPrompt />
+                      
             <div style={styles.btnRow}>
               <button style={styles.btnPrimary} onClick={startOver}>
                 Start fresh
