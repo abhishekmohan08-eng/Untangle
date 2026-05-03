@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
+import html2canvas from "html2canvas";
 import InstallPrompt from "@/app/components/InstallPrompt";
 
 type Stage = "dump" | "loading-analysis" | "analysis" | "loading-reflection" | "reflection";
@@ -26,6 +27,7 @@ export default function UntanglePage() {
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
   const [reflection, setReflection] = useState<Reflection | null>(null);
   const [error, setError] = useState("");
+  const clarityRef = useRef<HTMLDivElement>(null);
 
   async function handleUntangle() {
     if (!dumpText.trim() || dumpText.trim().length < 10) {
@@ -76,6 +78,23 @@ export default function UntanglePage() {
     } catch {
       setError("Something went wrong - please try again.");
       setStage("analysis");
+    }
+  }
+
+  async function handleDownload() {
+    if (!clarityRef.current) return;
+    try {
+      const canvas = await html2canvas(clarityRef.current, {
+        backgroundColor: "#f7f4ef",
+        scale: 2,
+      });
+      const link = document.createElement("a");
+      link.download = "untangle-clarity.png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    } catch (err) {
+      console.error("Download failed:", err);
+      setError("Could not save image - please try again.");
     }
   }
 
@@ -191,34 +210,42 @@ export default function UntanglePage() {
 
         {stage === "reflection" && reflection && (
           <div>
-            <h2 style={{ ...styles.title, fontSize: "26px" }}>
-              Your <em style={styles.titleEm}>clarity</em> snapshot
-            </h2>
-            <p style={styles.sub}>Here is a clear view of where you stand right now.</p>
+            <div ref={clarityRef} style={styles.captureArea}>
+              <h2 style={{ ...styles.title, fontSize: "26px" }}>
+                Your <em style={styles.titleEm}>clarity</em> snapshot
+              </h2>
+              <p style={styles.sub}>Here is a clear view of where you stand right now.</p>
 
-            <div style={styles.reflectionGrid}>
-              {[
-                { label: "Top priority", val: reflection.top_priority, accent: true },
-                { label: "Your insight", val: reflection.reframe },
-                { label: "First step", val: reflection.first_step },
-                { label: "Let this go", val: reflection.can_wait },
-              ].map((item, i) => (
-                <div key={i} style={styles.reflectionCard}>
-                  {item.accent && <div style={styles.priorityBadge}>Focus here</div>}
-                  <div style={styles.reflectionMeta}>{item.label}</div>
-                  <div style={styles.reflectionVal}>{item.val}</div>
-                </div>
-              ))}
+              <div style={styles.reflectionGrid}>
+                {[
+                  { label: "Top priority", val: reflection.top_priority, accent: true },
+                  { label: "Your insight", val: reflection.reframe },
+                  { label: "First step", val: reflection.first_step },
+                  { label: "Let this go", val: reflection.can_wait },
+                ].map((item, i) => (
+                  <div key={i} style={styles.reflectionCard}>
+                    {item.accent && <div style={styles.priorityBadge}>Focus here</div>}
+                    <div style={styles.reflectionMeta}>{item.label}</div>
+                    <div style={styles.reflectionVal}>{item.val}</div>
+                  </div>
+                ))}
+              </div>
+
+              <div style={{ ...styles.card, borderColor: "#8fb5ac", marginTop: "1.5rem" }}>
+                <div style={styles.cardLabel}>From your coach</div>
+                <p style={styles.closingThought}>{reflection.closing}</p>
+              </div>
             </div>
 
-            <div style={{ ...styles.card, borderColor: "#8fb5ac", marginTop: "1.5rem" }}>
-              <div style={styles.cardLabel}>From your coach</div>
-              <p style={styles.closingThought}>{reflection.closing}</p>
-            </div>
             <InstallPrompt />
 
+            {error && <div style={styles.errorBox}>{error}</div>}
+
             <div style={styles.btnRow}>
-              <button style={styles.btnPrimary} onClick={startOver}>
+              <button style={styles.btnPrimary} onClick={handleDownload}>
+                Save your clarity
+              </button>
+              <button style={styles.btnSecondary} onClick={startOver}>
                 Start fresh
               </button>
             </div>
@@ -248,8 +275,9 @@ const styles: Record<string, React.CSSProperties> = {
   disclaimer: { fontSize: 12, color: "#9a9a94", marginTop: 10, textAlign: "center" },
   errorBox: { background: "#fdf3ec", border: "1px solid #f0c4a0", borderRadius: 10, padding: "0.75rem 1rem", fontSize: 14, color: "#c4875a", marginTop: "0.75rem" },
   btnPrimary: { display: "inline-flex", alignItems: "center", gap: 8, marginTop: "1.25rem", padding: "14px 28px", background: "#4a7c6f", color: "white", border: "none", borderRadius: 100, fontFamily: "DM Sans, sans-serif", fontSize: 15, fontWeight: 500, cursor: "pointer", letterSpacing: "0.2px" },
+  btnSecondary: { display: "inline-flex", alignItems: "center", gap: 8, marginTop: "1.25rem", padding: "14px 24px", background: "transparent", color: "#5a5a55", border: "1.5px solid #e8e3da", borderRadius: 100, fontFamily: "DM Sans, sans-serif", fontSize: 14, fontWeight: 400, cursor: "pointer", letterSpacing: "0.2px" },
   btnDisabled: { opacity: 0.6, cursor: "not-allowed" },
-  btnRow: { display: "flex", gap: 10, marginTop: "1.5rem", flexWrap: "wrap" },
+  btnRow: { display: "flex", gap: 10, marginTop: "1.5rem", flexWrap: "wrap", alignItems: "center" },
   card: { background: "white", border: "1.5px solid #e8e3da", borderRadius: 16, padding: "1.5rem", marginBottom: "1.5rem" },
   cardLabel: { fontSize: 10, fontWeight: 500, letterSpacing: "1.5px", textTransform: "uppercase", color: "#9a9a94", marginBottom: 10 },
   tagRow: { display: "flex", flexWrap: "wrap", gap: 8, marginTop: 8 },
@@ -267,4 +295,5 @@ const styles: Record<string, React.CSSProperties> = {
   dumpDetails: { marginBottom: "1.5rem", border: "1px solid #e8e3da", borderRadius: 10, padding: "0.75rem 1rem", background: "white" },
   dumpSummary: { fontSize: 13, color: "#5a5a55", cursor: "pointer", fontWeight: 400, listStyle: "none" },
   dumpText: { fontSize: 14, color: "#5a5a55", lineHeight: 1.6, marginTop: "0.75rem", fontStyle: "italic", whiteSpace: "pre-wrap" },
+  captureArea: { padding: "1.5rem", background: "#f7f4ef", borderRadius: 8 },
 };
