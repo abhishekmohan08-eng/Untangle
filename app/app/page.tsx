@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import html2canvas from "html2canvas";
 import InstallPrompt from "@/app/components/InstallPrompt";
+import { track } from "@vercel/analytics";
 
 type Stage = "dump" | "loading-analysis" | "analysis" | "loading-reflection" | "reflection";
 
@@ -75,6 +76,7 @@ export default function UntanglePage() {
       const data = await res.json();
       setReflection(data);
       setStage("reflection");
+      track("session_completed");
     } catch {
       setError("Something went wrong - please try again.");
       setStage("analysis");
@@ -92,6 +94,7 @@ export default function UntanglePage() {
       link.download = "untangle-clarity.png";
       link.href = canvas.toDataURL("image/png");
       link.click();
+      track("clarity_downloaded");
     } catch (err) {
       console.error("Download failed:", err);
       setError("Could not save image - please try again.");
