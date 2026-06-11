@@ -142,13 +142,11 @@ export default function LandingPage() {
             <h2 style={{
               ...styles.coachName,
               fontSize: isMobile ? "28px" : "36px",
-            }}>Abhi Mohan</h2>
-            
-              href="https://www.jayshettycoaching.com/coaches/abhishek-mohan"
+            }}>Abhi Mohan</h2>            
+              <a href="https://www.jayshettycoaching.com/coaches/abhishek-mohan"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm uppercase tracking-wider text-emerald-800 hover:text-emerald-600 underline underline-offset-4 transition-colors"
-            >
+              style={styles.coachCred}>            
               Jay Shetty Certification School Certified Life Coach
             </a>
             <p style={styles.coachBio}>
