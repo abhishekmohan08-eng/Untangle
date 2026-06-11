@@ -22,7 +22,7 @@ export default function LandingPage() {
             <div style={styles.brandDot} />
             <span style={styles.brandName}>Untangle</span>
           </div>
-          <Link href="/app" style={styles.navCta}>
+          <Link href="/auth" style={styles.navCta}>
             Start for free →
           </Link>
         </div>
@@ -36,7 +36,7 @@ export default function LandingPage() {
           gap: isMobile ? "2rem" : "4rem",
         }}>
           <div style={{ flex: 1 }}>
-            <div style={styles.badge}>3 minutes to clarity</div>
+            <div style={styles.badge}>Your personal clarity partner</div>
             <h1 style={{
               ...styles.heroTitle,
               fontSize: isMobile ? "36px" : "52px",
@@ -47,10 +47,10 @@ export default function LandingPage() {
             <p style={styles.heroSub}>
               This is your safe space. Let it all out — and let Untangle help you separate what actually matters from the noise.
             </p>
-            <Link href="/app" style={styles.heroCta}>
+            <Link href="/auth" style={styles.heroCta}>
               Untangle your mind →
             </Link>
-            <p style={styles.heroNote}>Free to try. No account needed.</p>
+            <p style={styles.heroNote}>Free to try. Your clarity partner, always here.</p>
           </div>
           <div style={{ flex: 1 }}>
             <div style={styles.heroCard}>
@@ -94,7 +94,7 @@ export default function LandingPage() {
             textAlign: "center",
           }}>
             A real coaching session,<br />
-            <em style={styles.heroEm}>in 3 minutes.</em>
+            <em style={styles.heroEm}>with a partner who remembers.</em>
           </h2>
           <div style={{
             display: "grid",
@@ -104,7 +104,7 @@ export default function LandingPage() {
             {[
               { step: "01", title: "Pour it all out", desc: "Write everything that's on your mind. No filters, no judgement. This is your safe space." },
               { step: "02", title: "Signal vs Noise", desc: "Untangle separates what genuinely deserves your attention from the mental clutter you can let go of." },
-              { step: "03", title: "Your clarity snapshot", desc: "Walk away with your top priority, your first step, and a closing thought from your coach." },
+              { step: "03", title: "Your clarity snapshot", desc: "Walk away with your top priority, your first step, and a closing thought from your clarity partner." },
             ].map((item, i) => (
               <div key={i} style={styles.stepCard}>
                 <div style={styles.stepNumber}>{item.step}</div>
@@ -143,7 +143,7 @@ export default function LandingPage() {
               ...styles.coachName,
               fontSize: isMobile ? "28px" : "36px",
             }}>Abhi Mohan</h2>
-            <a
+            
               href="https://www.jayshettycoaching.com/coaches/abhishek-mohan"
               target="_blank"
               rel="noopener noreferrer"
@@ -151,11 +151,11 @@ export default function LandingPage() {
             >
               Jay Shetty Certification School Certified Life Coach
             </a>
-          <p style={styles.coachBio}>
-            &ldquo;As a life coach, the moment I love most is watching someone&apos;s shoulders drop. That shift when the noise clears and they can finally see what actually matters. I built Untangle because that feeling shouldn&apos;t be reserved for a coaching session. Every overwhelmed mind deserves a moment of clarity — quickly, privately, and on their own terms.&rdquo;
-          </p>
-          <p style={styles.coachMission}>
-            A balanced, focused mind doesn&apos;t just perform better — it loves better.
+            <p style={styles.coachBio}>
+              &ldquo;As a life coach, the moment I love most is watching someone&apos;s shoulders drop. That shift when the noise clears and they can finally see what actually matters. I built Untangle because that feeling shouldn&apos;t be reserved for a coaching session. Every overwhelmed mind deserves a moment of clarity — quickly, privately, and on their own terms.&rdquo;
+            </p>
+            <p style={styles.coachMission}>
+              A balanced, focused mind doesn&apos;t just perform better — it loves better.
             </p>
           </div>
         </div>
@@ -171,8 +171,8 @@ export default function LandingPage() {
             Your mind deserves<br />
             <em style={styles.heroEm}>this moment.</em>
           </h2>
-          <p style={styles.ctaSub}>Takes 3 minutes. Nothing is saved. Completely private.</p>
-          <Link href="/app" style={styles.heroCta}>
+          <p style={styles.ctaSub}>Your thoughts are safe. Your clarity partner remembers so you don&apos;t have to.</p>
+          <Link href="/auth" style={styles.heroCta}>
             Start for free →
           </Link>
         </div>
