@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase'
 export default function AuthPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [isLogin, setIsLogin] = useState(true)
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
@@ -13,6 +14,12 @@ export default function AuthPage() {
   const handleAuth = async () => {
     setLoading(true)
     setMessage('')
+
+    if (!isLogin && password !== confirmPassword) {
+      setMessage('Passwords don\'t match. Please try again.')
+      setLoading(false)
+      return
+    }
 
     if (isLogin) {
       const { error } = await supabase.auth.signInWithPassword({ email, password })
@@ -67,6 +74,16 @@ export default function AuthPage() {
             style={styles.input}
           />
 
+          {!isLogin && (
+            <input
+              type="password"
+              placeholder="Confirm password"
+              value={confirmPassword}
+              onChange={e => setConfirmPassword(e.target.value)}
+              style={styles.input}
+            />
+          )}
+
           <button
             onClick={handleAuth}
             disabled={loading}
@@ -79,7 +96,11 @@ export default function AuthPage() {
             <p style={styles.message}>{message}</p>
           )}
 
-          <p style={styles.toggle} onClick={() => setIsLogin(!isLogin)}>
+          <p style={styles.toggle} onClick={() => {
+            setIsLogin(!isLogin)
+            setMessage('')
+            setConfirmPassword('')
+          }}>
             {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
           </p>
         </div>
