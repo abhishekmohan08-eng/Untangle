@@ -28,7 +28,7 @@ export default function AuthPage() {
     } else {
       const { error } = await supabase.auth.signUp({ email, password })
       if (error) setMessage(error.message)
-      else setMessage('Account created! You can now sign in.')
+      else window.location.href = '/onboarding'
     }
 
     setLoading(false)
