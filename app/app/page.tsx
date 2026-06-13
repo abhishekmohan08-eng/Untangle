@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import html2canvas from "html2canvas";
 import InstallPrompt from "@/app/components/InstallPrompt";
 import { track } from "@vercel/analytics";
+import { supabase } from "@/lib/supabase";
 
 type Stage = "dump" | "loading-analysis" | "analysis" | "loading-reflection" | "reflection";
 
@@ -21,6 +22,12 @@ interface Reflection {
   closing: string;
 }
 
+interface PartnerProfile {
+  partner_name: string;
+  partner_style: string;
+  support_need: string;
+}
+
 export default function UntanglePage() {
   const [stage, setStage] = useState<Stage>("dump");
   const [dumpText, setDumpText] = useState("");
@@ -28,7 +35,24 @@ export default function UntanglePage() {
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
   const [reflection, setReflection] = useState<Reflection | null>(null);
   const [error, setError] = useState("");
+  const [partner, setPartner] = useState<PartnerProfile | null>(null);
   const clarityRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    async function loadPartner() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+
+      const { data } = await supabase
+        .from('partner_profile')
+        .select('partner_name, partner_style, support_need')
+        .eq('user_id', user.id)
+        .single()
+
+      if (data) setPartner(data)
+    }
+    loadPartner()
+  }, [])
 
   async function handleUntangle() {
     if (!dumpText.trim() || dumpText.trim().length < 10) {
@@ -111,6 +135,7 @@ export default function UntanglePage() {
   }
 
   const stepIndex = { dump: 0, "loading-analysis": 0, analysis: 1, "loading-reflection": 1, reflection: 2 }[stage];
+  const partnerName = partner?.partner_name || "your clarity partner";
 
   return (
     <div style={styles.page}>
@@ -118,7 +143,11 @@ export default function UntanglePage() {
         <div style={styles.brand}>
           <div style={styles.brandDot} />
           <span style={styles.brandName}>Untangle</span>
-          <span style={styles.tagline}>Find your clarity</span>
+          {partner ? (
+            <span style={styles.tagline}>with {partnerName}</span>
+          ) : (
+            <span style={styles.tagline}>Find your clarity</span>
+          )}
         </div>
 
         <div style={styles.stepRow}>
@@ -137,7 +166,9 @@ export default function UntanglePage() {
               What is weighing on your <em style={styles.titleEm}>mind</em> right now?
             </h1>
             <p style={styles.sub}>
-              This is your safe space. Let it all out.....
+              {partner
+                ? `This is your safe space. ${partnerName} is here and listening.`
+                : "This is your safe space. Let it all out....."}
             </p>
             <textarea
               style={styles.textarea}
@@ -235,7 +266,9 @@ export default function UntanglePage() {
               </div>
 
               <div style={{ ...styles.card, borderColor: "#8fb5ac", marginTop: "1.5rem" }}>
-                <div style={styles.cardLabel}>From your coach</div>
+                <div style={styles.cardLabel}>
+                  {partner ? `From ${partnerName}` : "From your coach"}
+                </div>
                 <p style={styles.closingThought}>{reflection.closing}</p>
               </div>
             </div>
