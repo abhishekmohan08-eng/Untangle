@@ -94,6 +94,7 @@ export default function UntanglePage() {
           signals: analysis?.signals,
           question: analysis?.question,
           answer: focusAnswer,
+          userId: (await supabase.auth.getUser()).data.user?.id,
         }),
       });
       if (!res.ok) throw new Error("API error");

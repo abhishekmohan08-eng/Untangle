@@ -1,4 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
@@ -35,7 +41,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (action === "reflect") {
-      const { dump, signals, question, answer } = body;
+      const { dump, signals, question, answer, userId } = body;
       const context = "Original thoughts: " + dump + "\nSignals: " + signals.join(", ") + "\nQuestion: " + question + "\nAnswer: " + answer;
 
       const systemPrompt = [
@@ -79,6 +85,19 @@ export async function POST(req: NextRequest) {
       const clean = text.replace(/```json|```/g, "").trim();
       try {
         const parsed = JSON.parse(clean);
+
+        // Save session to Supabase
+        if (userId) {
+          await supabase.from("sessions").insert({
+            user_id: userId,
+            brain_dump: dump,
+            signal: signals.join(", "),
+            closing_thread: parsed.first_step,
+            closing_mood: null,
+            partner_observations: parsed.closing,
+          });
+        }
+
         return NextResponse.json(parsed);
       } catch (parseErr) {
         console.error("Reflect JSON parse failed. Raw output:", clean);
