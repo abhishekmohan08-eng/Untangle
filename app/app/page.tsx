@@ -28,6 +28,12 @@ interface PartnerProfile {
   support_need: string;
 }
 
+interface LastSession {
+  signal: string;
+  closing_thread: string;
+  created_at: string;
+}
+
 export default function UntanglePage() {
   const [stage, setStage] = useState<Stage>("dump");
   const [dumpText, setDumpText] = useState("");
@@ -36,22 +42,33 @@ export default function UntanglePage() {
   const [reflection, setReflection] = useState<Reflection | null>(null);
   const [error, setError] = useState("");
   const [partner, setPartner] = useState<PartnerProfile | null>(null);
+  const [lastSession, setLastSession] = useState<LastSession | null>(null);
   const clarityRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    async function loadPartner() {
+    async function loadData() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
 
-      const { data } = await supabase
+      const { data: profileData } = await supabase
         .from('partner_profile')
         .select('partner_name, partner_style, support_need')
         .eq('user_id', user.id)
         .single()
 
-      if (data) setPartner(data)
+      if (profileData) setPartner(profileData)
+
+      const { data: sessionData } = await supabase
+        .from('sessions')
+        .select('signal, closing_thread, created_at')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single()
+
+      if (sessionData) setLastSession(sessionData)
     }
-    loadPartner()
+    loadData()
   }, [])
 
   async function handleUntangle() {
@@ -167,7 +184,9 @@ export default function UntanglePage() {
               What is weighing on your <em style={styles.titleEm}>mind</em> right now?
             </h1>
             <p style={styles.sub}>
-              {partner
+              {lastSession
+                ? `Last time you were working through: ${lastSession.signal.split(',')[0].toLowerCase()}. How has that been sitting with you?`
+                : partner
                 ? `This is your safe space. ${partnerName} is here and listening.`
                 : "This is your safe space. Let it all out....."}
             </p>
