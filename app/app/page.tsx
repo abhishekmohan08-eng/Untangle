@@ -71,6 +71,11 @@ export default function UntanglePage() {
     loadData()
   }, [])
 
+  async function handleSignOut() {
+    await supabase.auth.signOut()
+    window.location.href = '/'
+  }
+
   async function handleUntangle() {
     if (!dumpText.trim() || dumpText.trim().length < 10) {
       setError("Please write a little more - what is really going on?");
@@ -166,6 +171,9 @@ export default function UntanglePage() {
           ) : (
             <span style={styles.tagline}>Find your clarity</span>
           )}
+          <button onClick={handleSignOut} style={styles.signOutBtn}>
+            Sign out
+          </button>
         </div>
 
         <div style={styles.stepRow}>
@@ -319,6 +327,7 @@ const styles: Record<string, React.CSSProperties> = {
   brandDot: { width: 7, height: 7, borderRadius: "50%", background: "#4a7c6f", marginBottom: 4 },
   brandName: { fontFamily: "Playfair Display, serif", fontSize: 28, fontWeight: 400, color: "#1a1a18", letterSpacing: -0.5 },
   tagline: { fontSize: 12, color: "#9a9a94", fontWeight: 300, letterSpacing: "0.5px", textTransform: "uppercase", marginLeft: "auto" },
+  signOutBtn: { background: "none", border: "none", fontSize: 12, color: "#9a9a94", cursor: "pointer", fontFamily: "DM Sans, sans-serif", padding: "4px 8px", marginLeft: "12px" },
   stepRow: { display: "flex", gap: 6, marginBottom: "2.5rem" },
   stepDot: { width: 6, height: 6, borderRadius: "50%", background: "#e8e3da", transition: "all 0.3s" },
   stepDone: { background: "#8fb5ac" },
