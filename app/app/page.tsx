@@ -48,13 +48,21 @@ export default function UntanglePage() {
   useEffect(() => {
     async function loadData() {
       const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
+      if (!user) {
+        window.location.href = '/auth'
+        return
+      }
 
       const { data: profileData } = await supabase
         .from('partner_profile')
         .select('partner_name, partner_style, support_need')
         .eq('user_id', user.id)
         .single()
+
+      if (!profileData) {
+        window.location.href = '/onboarding'
+        return
+      }
 
       if (profileData) setPartner(profileData)
 
