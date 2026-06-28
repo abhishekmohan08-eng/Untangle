@@ -6,7 +6,7 @@ import InstallPrompt from "@/app/components/InstallPrompt";
 import { track } from "@vercel/analytics";
 import { supabase } from "@/lib/supabase";
 
-type Stage = "dump" | "loading-analysis" | "analysis" | "loading-reflection" | "reflection";
+type Stage = "dump" | "checking-in" | "loading-analysis" | "analysis" | "loading-reflection" | "reflection";
 
 interface Analysis {
   signals: string[];
@@ -37,6 +37,7 @@ interface LastSession {
 export default function UntanglePage() {
   const [stage, setStage] = useState<Stage>("dump");
   const [dumpText, setDumpText] = useState("");
+  const [extraDump, setExtraDump] = useState("");
   const [focusAnswer, setFocusAnswer] = useState("");
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
   const [reflection, setReflection] = useState<Reflection | null>(null);
@@ -90,20 +91,30 @@ export default function UntanglePage() {
       return;
     }
     setError("");
+    setStage("checking-in");
+  }
+
+  async function handleReady() {
+    const fullDump = extraDump.trim()
+      ? dumpText + "\n\n" + extraDump
+      : dumpText;
+
+    setError("");
     setStage("loading-analysis");
     try {
       const res = await fetch("/api/untangle", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "analyse", dump: dumpText }),
+        body: JSON.stringify({ action: "analyse", dump: fullDump }),
       });
       if (!res.ok) throw new Error("API error");
       const data = await res.json();
       setAnalysis(data);
+      setDumpText(fullDump);
       setStage("analysis");
     } catch {
       setError("Something went wrong - please try again.");
-      setStage("dump");
+      setStage("checking-in");
     }
   }
 
@@ -158,6 +169,7 @@ export default function UntanglePage() {
 
   function startOver() {
     setDumpText("");
+    setExtraDump("");
     setFocusAnswer("");
     setAnalysis(null);
     setReflection(null);
@@ -165,7 +177,7 @@ export default function UntanglePage() {
     setStage("dump");
   }
 
-  const stepIndex = { dump: 0, "loading-analysis": 0, analysis: 1, "loading-reflection": 1, reflection: 2 }[stage];
+  const stepIndex = { dump: 0, "checking-in": 0, "loading-analysis": 0, analysis: 1, "loading-reflection": 1, reflection: 2 }[stage];
   const partnerName = partner?.partner_name || "your clarity partner";
 
   return (
@@ -194,7 +206,7 @@ export default function UntanglePage() {
           ))}
         </div>
 
-        {(stage === "dump" || stage === "loading-analysis") && (
+        {stage === "dump" && (
           <div>
             <h1 style={styles.title}>
               What is weighing on your <em style={styles.titleEm}>mind</em> right now?
@@ -212,18 +224,55 @@ export default function UntanglePage() {
               value={dumpText}
               onChange={(e) => setDumpText(e.target.value)}
               maxLength={1000}
-              disabled={stage === "loading-analysis"}
             />
             <div style={styles.charHint}>{dumpText.length} / 1000</div>
             {error && <div style={styles.errorBox}>{error}</div>}
             <button
-              style={{ ...styles.btnPrimary, ...(stage === "loading-analysis" ? styles.btnDisabled : {}) }}
+              style={styles.btnPrimary}
               onClick={handleUntangle}
-              disabled={stage === "loading-analysis"}
             >
-              {stage === "loading-analysis" ? "Untangling..." : "Untangle this"}
+              Untangle this
             </button>
             <p style={{ ...styles.disclaimer, textAlign: "left" }}>Your thoughts stay yours. Always.</p>
+          </div>
+        )}
+
+        {stage === "checking-in" && (
+          <div>
+            <h1 style={styles.title}>
+              Thank you for <em style={styles.titleEm}>sharing</em> that.
+            </h1>
+            <p style={styles.sub}>
+              {partnerName} has heard everything. Before we find your clarity — is there anything else sitting underneath this that you haven't said yet?
+            </p>
+            <textarea
+              style={styles.textarea}
+              placeholder="Add anything else here... or leave this empty if you're ready."
+              value={extraDump}
+              onChange={(e) => setExtraDump(e.target.value)}
+            />
+            <div style={styles.btnRow}>
+              <button style={styles.btnPrimary} onClick={handleReady}>
+                I'm ready for clarity →
+              </button>
+            </div>
+            <p style={{ ...styles.disclaimer, textAlign: "left" }}>Take your time. There's no rush.</p>
+          </div>
+        )}
+
+        {stage === "loading-analysis" && (
+          <div>
+            <h1 style={styles.title}>
+              What is weighing on your <em style={styles.titleEm}>mind</em> right now?
+            </h1>
+            <textarea
+              style={styles.textarea}
+              value={dumpText}
+              disabled
+            />
+            <button style={{ ...styles.btnPrimary, ...styles.btnDisabled }} disabled>
+              Untangling...
+            </button>
           </div>
         )}
 
