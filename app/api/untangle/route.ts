@@ -12,6 +12,27 @@ export async function POST(req: NextRequest) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
 
   try {
+    if (action === "acknowledge") {
+      const { dump, partnerName } = body;
+      const response = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": apiKey!,
+          "anthropic-version": "2023-06-01",
+        },
+        body: JSON.stringify({
+          model: "claude-opus-4-5",
+          max_tokens: 200,
+          system: `You are ${partnerName || "Sage"}, a warm personal clarity partner. Someone has just shared what's on their mind. Your job right now is NOT to analyse or advise — just to make them feel genuinely heard. Respond in 2-3 warm, human sentences that reflect back what you noticed in their words. Be specific to what they actually said — not generic. Show you were listening. End with nothing — no question, no advice. Just presence. Respond in plain text only, no JSON, no formatting.`,
+          messages: [{ role: "user", content: dump }],
+        }),
+      });
+      const data = await response.json();
+      const text = data.content[0].text.trim();
+      return NextResponse.json({ acknowledgement: text });
+    }
+
     if (action === "analyse") {
       const { dump } = body;
       const response = await fetch("https://api.anthropic.com/v1/messages", {
@@ -86,7 +107,6 @@ export async function POST(req: NextRequest) {
       try {
         const parsed = JSON.parse(clean);
 
-        // Save session to Supabase
         if (userId) {
           await supabase.from("sessions").insert({
             user_id: userId,

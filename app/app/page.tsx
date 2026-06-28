@@ -6,7 +6,7 @@ import InstallPrompt from "@/app/components/InstallPrompt";
 import { track } from "@vercel/analytics";
 import { supabase } from "@/lib/supabase";
 
-type Stage = "dump" | "checking-in" | "loading-analysis" | "analysis" | "loading-reflection" | "reflection";
+type Stage = "dump" | "acknowledging" | "checking-in" | "loading-analysis" | "analysis" | "loading-reflection" | "reflection";
 
 interface Analysis {
   signals: string[];
@@ -39,6 +39,7 @@ export default function UntanglePage() {
   const [dumpText, setDumpText] = useState("");
   const [extraDump, setExtraDump] = useState("");
   const [focusAnswer, setFocusAnswer] = useState("");
+  const [acknowledgement, setAcknowledgement] = useState("");
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
   const [reflection, setReflection] = useState<Reflection | null>(null);
   const [error, setError] = useState("");
@@ -91,7 +92,25 @@ export default function UntanglePage() {
       return;
     }
     setError("");
-    setStage("checking-in");
+    setStage("acknowledging");
+
+    try {
+      const res = await fetch("/api/untangle", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "acknowledge",
+          dump: dumpText,
+          partnerName: partner?.partner_name || "Sage",
+        }),
+      });
+      if (!res.ok) throw new Error("API error");
+      const data = await res.json();
+      setAcknowledgement(data.acknowledgement);
+      setStage("checking-in");
+    } catch {
+      setStage("checking-in");
+    }
   }
 
   async function handleReady() {
@@ -171,14 +190,15 @@ export default function UntanglePage() {
     setDumpText("");
     setExtraDump("");
     setFocusAnswer("");
+    setAcknowledgement("");
     setAnalysis(null);
     setReflection(null);
     setError("");
     setStage("dump");
   }
 
-  const stepIndex = { dump: 0, "checking-in": 0, "loading-analysis": 0, analysis: 1, "loading-reflection": 1, reflection: 2 }[stage];
-  const partnerName = partner?.partner_name || "your clarity partner";
+  const stepIndex = { dump: 0, "acknowledging": 0, "checking-in": 0, "loading-analysis": 0, analysis: 1, "loading-reflection": 1, reflection: 2 }[stage];
+  const partnerName = partner?.partner_name || "Sage";
 
   return (
     <div style={styles.page}>
@@ -227,23 +247,31 @@ export default function UntanglePage() {
             />
             <div style={styles.charHint}>{dumpText.length} / 1000</div>
             {error && <div style={styles.errorBox}>{error}</div>}
-            <button
-              style={styles.btnPrimary}
-              onClick={handleUntangle}
-            >
+            <button style={styles.btnPrimary} onClick={handleUntangle}>
               Untangle this
             </button>
             <p style={{ ...styles.disclaimer, textAlign: "left" }}>Your thoughts stay yours. Always.</p>
           </div>
         )}
 
-        {stage === "checking-in" && (
+        {stage === "acknowledging" && (
           <div>
             <h1 style={styles.title}>
-              Thank you for <em style={styles.titleEm}>sharing</em> that.
+              <em style={styles.titleEm}>{partnerName}</em> is listening...
             </h1>
+            <p style={styles.sub}>Taking a moment to be with what you shared.</p>
+          </div>
+        )}
+
+        {stage === "checking-in" && (
+          <div>
+            {acknowledgement && (
+              <div style={styles.acknowledgementBox}>
+                <p style={styles.acknowledgementText}>{acknowledgement}</p>
+              </div>
+            )}
             <p style={styles.sub}>
-              {partnerName} has heard everything. Before we find your clarity — is there anything else sitting underneath this that you haven't said yet?
+              Is there anything else sitting underneath this that you haven't said yet?
             </p>
             <textarea
               style={styles.textarea}
@@ -263,16 +291,9 @@ export default function UntanglePage() {
         {stage === "loading-analysis" && (
           <div>
             <h1 style={styles.title}>
-              What is weighing on your <em style={styles.titleEm}>mind</em> right now?
+              Finding your <em style={styles.titleEm}>clarity</em>...
             </h1>
-            <textarea
-              style={styles.textarea}
-              value={dumpText}
-              disabled
-            />
-            <button style={{ ...styles.btnPrimary, ...styles.btnDisabled }} disabled>
-              Untangling...
-            </button>
+            <p style={styles.sub}>{partnerName} is separating what matters from the noise.</p>
           </div>
         )}
 
@@ -396,6 +417,8 @@ const styles: Record<string, React.CSSProperties> = {
   charHint: { fontSize: 12, color: "#9a9a94", marginTop: 6, marginBottom: 4 },
   disclaimer: { fontSize: 12, color: "#9a9a94", marginTop: 10, textAlign: "center" },
   errorBox: { background: "#fdf3ec", border: "1px solid #f0c4a0", borderRadius: 10, padding: "0.75rem 1rem", fontSize: 14, color: "#c4875a", marginTop: "0.75rem" },
+  acknowledgementBox: { background: "white", border: "1.5px solid #8fb5ac", borderRadius: 16, padding: "1.5rem", marginBottom: "1.5rem" },
+  acknowledgementText: { fontFamily: "Playfair Display, serif", fontSize: 18, fontStyle: "italic", lineHeight: 1.7, color: "#1a1a18", margin: 0 },
   btnPrimary: { display: "inline-flex", alignItems: "center", gap: 8, marginTop: "1.25rem", padding: "14px 28px", background: "#4a7c6f", color: "white", border: "none", borderRadius: 100, fontFamily: "DM Sans, sans-serif", fontSize: 15, fontWeight: 500, cursor: "pointer", letterSpacing: "0.2px" },
   btnSecondary: { display: "inline-flex", alignItems: "center", gap: 8, marginTop: "1.25rem", padding: "14px 24px", background: "transparent", color: "#5a5a55", border: "1.5px solid #e8e3da", borderRadius: 100, fontFamily: "DM Sans, sans-serif", fontSize: 14, fontWeight: 400, cursor: "pointer", letterSpacing: "0.2px" },
   btnDisabled: { opacity: 0.6, cursor: "not-allowed" },
