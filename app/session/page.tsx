@@ -20,6 +20,8 @@ interface Reflection {
   can_wait: string;
   reframe: string;
   closing: string;
+  quote?: string;
+  quote_author?: string;
 }
 
 interface PartnerProfile {
@@ -377,6 +379,14 @@ export default function UntanglePage() {
                 </div>
                 <p style={styles.closingThought}>{reflection.closing}</p>
               </div>
+
+              {reflection.quote && (
+                <div style={styles.quoteCard}>
+                  <div style={styles.quoteLabel}>A thought to carry with you</div>
+                  <p style={styles.quoteText}>"{reflection.quote}"</p>
+                  <p style={styles.quoteAuthor}>— {reflection.quote_author}</p>
+                </div>
+              )}
             </div>
 
             <InstallPrompt />
@@ -386,6 +396,9 @@ export default function UntanglePage() {
             <div style={styles.btnRow}>
               <button style={styles.btnPrimary} onClick={handleDownload}>
                 Save your clarity
+              </button>
+              <button style={styles.btnSecondary} onClick={() => window.location.href = '/app'}>
+                Back to home
               </button>
               <button style={styles.btnSecondary} onClick={startOver}>
                 Start fresh
@@ -437,6 +450,10 @@ const styles: Record<string, React.CSSProperties> = {
   reflectionMeta: { fontSize: 10, fontWeight: 500, letterSpacing: "1.5px", textTransform: "uppercase", color: "#9a9a94", marginBottom: 6 },
   reflectionVal: { fontSize: 15, fontWeight: 400, color: "#1a1a18", lineHeight: 1.4 },
   closingThought: { fontFamily: "Playfair Display, serif", fontSize: 18, fontStyle: "italic", lineHeight: 1.6, color: "#1a1a18", margin: 0 },
+  quoteCard: { background: "#f0f7f5", border: "1.5px solid #8fb5ac", borderRadius: 16, padding: "1.5rem", marginTop: "1.5rem", textAlign: "center" },
+  quoteLabel: { fontSize: 10, fontWeight: 500, letterSpacing: "1.5px", textTransform: "uppercase", color: "#4a7c6f", marginBottom: "1rem" },
+  quoteText: { fontFamily: "Playfair Display, serif", fontSize: 20, fontStyle: "italic", lineHeight: 1.6, color: "#1a1a18", margin: "0 0 0.75rem" },
+  quoteAuthor: { fontSize: 13, color: "#5a5a55", fontWeight: 400, margin: 0 },
   dumpDetails: { marginBottom: "1.5rem", border: "1px solid #e8e3da", borderRadius: 10, padding: "0.75rem 1rem", background: "white" },
   dumpSummary: { fontSize: 13, color: "#5a5a55", cursor: "pointer", fontWeight: 400, listStyle: "none" },
   dumpText: { fontSize: 14, color: "#5a5a55", lineHeight: 1.6, marginTop: "0.75rem", fontStyle: "italic", whiteSpace: "pre-wrap" },

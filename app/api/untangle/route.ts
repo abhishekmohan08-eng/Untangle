@@ -83,7 +83,9 @@ export async function POST(req: NextRequest) {
         "  \"first_step\": \"The smallest concrete next move — or explicit permission not to move. Under 15 words. Specific. Doable in the next few hours. If no action fits, say so plainly (e.g. 'Sleep on it. Decide nothing tonight.').\",",
         "  \"can_wait\": \"What to release — must be consistent with and reinforce the rest of the reflection. Cannot contradict the top_priority or closing message. Could be a task, an expectation, or a story they're telling themselves. Under 15 words.\",",
         "  \"reframe\": \"Name one specific thing the person already did right — a hidden strength they may not see in themselves. Reflect back something they actually did or noticed, not a generic quality. Sharp, specific, surprising. Under 12 words. Vary your sentence structure — do not always start with You are or You have. No flattery. No 'most people never...' or 'that's rare' framings. State the observation, then stop.\",",
-        "  \"closing\": \"End like Abhi — warm, specific to exactly what they shared. Lead with what you noticed or validated. Any challenge should come gently and late in the message, feeling like care rather than confrontation. Honour their position even when it's uncomfortable (anger, numbness, exhaustion, ambivalence). Never platitudes. Never 'you've got this.' Under 35 words.\"",
+        "  \"closing\": \"End like Abhi — warm, specific to exactly what they shared. Lead with what you noticed or validated. Any challenge should come gently and late in the message, feeling like care rather than confrontation. Honour their position even when it's uncomfortable (anger, numbness, exhaustion, ambivalence). Never platitudes. Never 'you've got this.' Under 35 words.\",",
+        "  \"quote\": \"A short quote from a real, well-known person — philosopher, author, leader, poet — that speaks directly to what this person just worked through. Must be a real quote you are certain is accurately attributed. Under 25 words. Format: the quote text only, no quotation marks.\",",
+        "  \"quote_author\": \"The full name of the person who said the quote. Real person only.\"",
         "}"
       ].join("\n");
 
@@ -115,6 +117,7 @@ export async function POST(req: NextRequest) {
             closing_thread: parsed.first_step,
             closing_mood: null,
             partner_observations: parsed.closing,
+            closing_quote: parsed.quote ? `${parsed.quote} — ${parsed.quote_author}` : null,
           });
         }
 
