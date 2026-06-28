@@ -17,6 +17,7 @@ interface Session {
 export default function HomePage() {
   const [partner, setPartner] = useState<PartnerProfile | null>(null);
   const [sessions, setSessions] = useState<Session[]>([]);
+  const [showAll, setShowAll] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -70,6 +71,7 @@ export default function HomePage() {
   }
 
   const partnerName = partner?.partner_name || "Sage"
+  const visibleSessions = showAll ? sessions : sessions.slice(0, 3)
 
   if (loading) return (
     <div style={styles.page}>
@@ -122,7 +124,7 @@ export default function HomePage() {
           <div style={styles.historySection}>
             <p style={styles.historyLabel}>Your journey with {partnerName}</p>
             <div style={styles.sessionList}>
-              {sessions.map((session, i) => (
+              {visibleSessions.map((session) => (
                 <div key={session.id} style={styles.sessionCard}>
                   <div style={styles.sessionMeta}>{timeAgo(session.created_at)}</div>
                   <div style={styles.sessionSignal}>
@@ -136,6 +138,15 @@ export default function HomePage() {
                 </div>
               ))}
             </div>
+
+            {sessions.length > 3 && (
+              <button
+                style={styles.viewAllBtn}
+                onClick={() => setShowAll(!showAll)}
+              >
+                {showAll ? "Show less" : `View all ${sessions.length} sessions`}
+              </button>
+            )}
           </div>
         )}
 
@@ -166,5 +177,6 @@ const styles: Record<string, React.CSSProperties> = {
   sessionMeta: { fontSize: 11, color: "#9a9a94", fontWeight: 400, marginBottom: 6, letterSpacing: "0.3px" },
   sessionSignal: { fontSize: 15, fontWeight: 500, color: "#1a1a18", marginBottom: 4 },
   sessionThread: { fontSize: 13, color: "#5a5a55", fontWeight: 300, fontStyle: "italic" },
+  viewAllBtn: { background: "none", border: "none", fontSize: 13, color: "#4a7c6f", cursor: "pointer", fontFamily: "DM Sans, sans-serif", fontWeight: 500, marginTop: "1rem", padding: 0 },
   footer: { marginTop: "3rem", fontSize: 13, color: "#9a9a94", fontStyle: "italic", textAlign: "center" },
 }
