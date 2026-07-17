@@ -157,6 +157,7 @@ export default function UntanglePage() {
           question: analysis?.question,
           answer: focusAnswer,
           userId: (await supabase.auth.getUser()).data.user?.id,
+          partnerName: partner?.partner_name || "Sage",
         }),
       });
       if (!res.ok) throw new Error("API error");
