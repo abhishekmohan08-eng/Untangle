@@ -34,6 +34,20 @@ export default function AuthPage() {
     setLoading(false)
   }
 
+  const handleForgotPassword = async () => {
+    if (!email.trim()) {
+      setMessage('Enter your email above first.')
+      return
+    }
+    setLoading(true)
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: 'https://www.untanglemythoughts.com/auth/reset'
+    })
+    setLoading(false)
+    if (error) setMessage(error.message)
+    else setMessage('Check your email for a reset link.')
+  }
+
   return (
     <div style={styles.page}>
 
@@ -73,6 +87,12 @@ export default function AuthPage() {
             onChange={e => setPassword(e.target.value)}
             style={styles.input}
           />
+
+          {isLogin && (
+            <p style={styles.forgotPassword} onClick={handleForgotPassword}>
+              Forgot your password?
+            </p>
+          )}
 
           {!isLogin && (
             <input
@@ -197,6 +217,15 @@ const styles: Record<string, React.CSSProperties> = {
     color: '#1a1a18',
     outline: 'none',
     boxSizing: 'border-box',
+  },
+  forgotPassword: {
+    fontSize: 13,
+    color: '#4a7c6f',
+    cursor: 'pointer',
+    textAlign: 'right',
+    marginTop: '-4px',
+    marginBottom: '12px',
+    fontWeight: 500,
   },
   button: {
     width: '100%',
