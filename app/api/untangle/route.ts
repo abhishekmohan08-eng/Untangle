@@ -67,7 +67,7 @@ THE LOUDER THREAD vs THE MORE IMPORTANT THREAD: What someone is most anxious abo
 
 For the question: ask about whichever thread seems loudest — not necessarily the most actionable. Sometimes the right question points at the thing they are avoiding, not the thing they presented. Ask "which one is harder to put down?" or "which one is taking up more of you?" rather than "what should you do first?"
 
-Respond ONLY with valid JSON, no markdown, no code fences. Schema: {"signals": ["2-5 real concerns, each under 6 words"], "noise": ["2-4 mental clutter items, each under 6 words"], "question": "one warm focused question under 15 words"}`,
+Respond ONLY with valid JSON, no markdown, no code fences. Schema: {"signals": ["2-5 real concerns, each under 6 words"], "noise": ["2-4 mental clutter items, each under 6 words"], "question": "one warm focused question under 15 words. Plain simple English — no poetic language, no complex phrasing. Should be immediately understood on first read. Examples: 'Which one feels hardest to put down?' or 'What would feel different if this was resolved?' or 'What are you most afraid to admit here?'"}`,
           messages: [{ role: "user", content: "Here is what's on my mind:\n\n" + dump }],
         }),
       });
