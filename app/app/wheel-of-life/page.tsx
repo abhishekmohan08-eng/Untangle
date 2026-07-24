@@ -2,7 +2,7 @@
 
 import { Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import WheelOfLife from '@/components/wheel-of-life'
+import WheelOfLife from '@/app/components/wheel-of-life'
 
 function WheelOfLifePageInner() {
   const router = useRouter()
