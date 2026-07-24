@@ -10,14 +10,47 @@ export default function ResetPasswordPage() {
   const [message, setMessage] = useState('')
   const [isError, setIsError] = useState(false)
   const [isReady, setIsReady] = useState(false)
+  const [checkFailed, setCheckFailed] = useState(false)
 
   useEffect(() => {
-    // Supabase puts the token in the URL hash — this confirms the session
-    supabase.auth.onAuthStateChange((event) => {
-      if (event === 'PASSWORD_RECOVERY') {
+    let isMounted = true
+
+    // 1. Listen for FUTURE auth events (covers the case where the
+    //    client hasn't parsed the URL hash yet when this mounts)
+    const { data: listener } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'PASSWORD_RECOVERY' && isMounted) {
         setIsReady(true)
+        setCheckFailed(false)
       }
     })
+
+    // 2. ALSO check for an existing session immediately (covers the case
+    //    where the client already parsed the hash and fired the event
+    //    BEFORE this component mounted and subscribed above — this is
+    //    the race condition that was causing the infinite "Checking..." state)
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session && isMounted) {
+        setIsReady(true)
+        setCheckFailed(false)
+      }
+    })
+
+    // 3. Safety net: if nothing resolves within 5 seconds, the link is
+    //    likely invalid/expired — stop showing an infinite spinner
+    const timeout = setTimeout(() => {
+      if (isMounted) {
+        setIsReady((current) => {
+          if (!current) setCheckFailed(true)
+          return current
+        })
+      }
+    }, 5000)
+
+    return () => {
+      isMounted = false
+      listener.subscription.unsubscribe()
+      clearTimeout(timeout)
+    }
   }, [])
 
   const handleReset = async () => {
@@ -51,6 +84,12 @@ export default function ResetPasswordPage() {
     setLoading(false)
   }
 
+  const subtitleText = isReady
+    ? 'Enter your new password below.'
+    : checkFailed
+    ? 'This reset link is invalid or has expired. Please request a new one.'
+    : 'Checking your reset link...'
+
   return (
     <div style={styles.page}>
       <nav style={styles.nav}>
@@ -64,11 +103,7 @@ export default function ResetPasswordPage() {
         <div style={styles.card}>
           <div style={styles.badge}>Reset your password</div>
           <h1 style={styles.title}>Choose a new password</h1>
-          <p style={styles.subtitle}>
-            {isReady
-              ? 'Enter your new password below.'
-              : 'Checking your reset link...'}
-          </p>
+          <p style={styles.subtitle}>{subtitleText}</p>
 
           {isReady && (
             <>
@@ -96,6 +131,12 @@ export default function ResetPasswordPage() {
             </>
           )}
 
+          {checkFailed && !isReady && (
+            <a href="/auth/forgot-password" style={styles.button}>
+              Request a new link →
+            </a>
+          )}
+
           {message && (
             <p style={{ ...styles.message, color: isError ? '#c4875a' : '#4a7c6f' }}>
               {message}
@@ -120,7 +161,7 @@ const styles: Record<string, React.CSSProperties> = {
   title: { fontFamily: "'Playfair Display', serif", fontSize: 32, fontWeight: 400, color: '#1a1a18', marginBottom: '0.5rem', lineHeight: 1.2 },
   subtitle: { fontSize: 15, color: '#5a5a55', fontWeight: 300, lineHeight: 1.6, marginBottom: '2rem' },
   input: { width: '100%', padding: '14px 16px', marginBottom: '12px', borderRadius: 10, border: '1.5px solid #e8e3da', fontSize: 15, fontFamily: "'DM Sans', sans-serif", background: '#f7f4ef', color: '#1a1a18', outline: 'none', boxSizing: 'border-box' },
-  button: { width: '100%', padding: '14px', background: '#4a7c6f', color: 'white', borderRadius: 100, border: 'none', fontSize: 15, fontWeight: 500, fontFamily: "'DM Sans', sans-serif", cursor: 'pointer', marginTop: '4px', letterSpacing: '0.2px' },
+  button: { width: '100%', padding: '14px', background: '#4a7c6f', color: 'white', borderRadius: 100, border: 'none', fontSize: 15, fontWeight: 500, fontFamily: "'DM Sans', sans-serif", cursor: 'pointer', marginTop: '4px', letterSpacing: '0.2px', textAlign: 'center', textDecoration: 'none', display: 'inline-block', boxSizing: 'border-box' },
   message: { marginTop: '1rem', fontSize: 14, textAlign: 'center' },
   footer: { marginTop: '2rem', fontSize: 13, color: '#9a9a94', fontStyle: 'italic' },
 }
