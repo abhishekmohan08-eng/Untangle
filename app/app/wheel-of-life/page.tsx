@@ -1,0 +1,1 @@
+import WheelOfLife from '@/components/WheelOfLife'
