@@ -1,1 +1,1 @@
-import WheelOfLife from '@/components/WheelOfLife'
+import WheelOfLife from '@/components/wheel-of-life'
