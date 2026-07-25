@@ -400,7 +400,7 @@ export default function UntanglePage() {
 
             {sessionId && (
               
-                href={`/app/wheel-of-life?sessionId=${sessionId}`}
+                href={'/app/wheel-of-life?sessionId=' + sessionId}
                 style={styles.wheelLink}
               >
                 Want to see where things stand across your life? →
