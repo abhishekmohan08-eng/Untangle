@@ -1,92 +1,237 @@
 'use client'
 
-import { Suspense } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import WheelOfLife from '@/components/WheelOfLife'
+import { useState } from 'react'
+import { supabase } from '@/lib/supabase'
 
-function WheelOfLifePageInner() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const sessionId = searchParams.get('sessionId') ?? undefined
+type Area = {
+  key: string
+  label: string
+}
 
-  const handleComplete = (scores: Record<string, number>) => {
-    // Scores are already saved to Supabase by the component itself.
-    // This is where we could later trigger a short Sage reflection
-    // before navigating home. For now, just give the user a moment
-    // to see the "Saved" state, then send them back.
-    setTimeout(() => {
-      router.push('/app')
-    }, 1200)
+const AREAS: Area[] = [
+  { key: 'career', label: 'Career' },
+  { key: 'money', label: 'Money' },
+  { key: 'health', label: 'Health' },
+  { key: 'relationships', label: 'Relationships' },
+  { key: 'growth', label: 'Growth' },
+  { key: 'fun', label: 'Fun' },
+  { key: 'environment', label: 'Environment' },
+  { key: 'purpose', label: 'Purpose' },
+]
+
+const CX = 170
+const CY = 170
+const MAX_R = 130
+
+function polar(index: number, total: number, r: number): [number, number] {
+  const angle = (Math.PI * 2 * index) / total - Math.PI / 2
+  return [CX + r * Math.cos(angle), CY + r * Math.sin(angle)]
+}
+
+interface WheelOfLifeProps {
+  sessionId?: string
+  initialScores?: Record<string, number>
+  onComplete?: (scores: Record<string, number>) => void
+}
+
+export default function WheelOfLife({ sessionId, initialScores, onComplete }: WheelOfLifeProps) {
+  const [scores, setScores] = useState<Record<string, number>>(
+    initialScores ?? Object.fromEntries(AREAS.map(a => [a.key, 6]))
+  )
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
+
+  const updateScore = (key: string, value: number) => {
+    setScores(prev => ({ ...prev, [key]: value }))
+    setSaved(false)
   }
 
-  return (
-    <div style={styles.page}>
-      <nav style={styles.nav}>
-        <a href="/" style={styles.brand}>
-          <div style={styles.brandDot} />
-          <span style={styles.brandName}>Untangle</span>
-        </a>
-      </nav>
+  const handleSave = async () => {
+    setSaving(true)
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        await supabase.from('life_wheel_entries').insert({
+          user_id: user.id,
+          session_id: sessionId ?? null,
+          scores,
+        })
+      }
+      setSaved(true)
+      onComplete?.(scores)
+    } catch (err) {
+      console.error('Failed to save wheel of life entry', err)
+    } finally {
+      setSaving(false)
+    }
+  }
 
-      <div style={styles.wrapper}>
-        <WheelOfLife sessionId={sessionId} onComplete={handleComplete} />
-        <a href="/app" style={styles.skipLink}>
-          Skip for now →
-        </a>
+  const polygonPoints = AREAS.map((a, i) =>
+    polar(i, AREAS.length, (MAX_R / 10) * scores[a.key]).join(',')
+  ).join(' ')
+
+  return (
+    <div style={styles.wrapper}>
+      <div style={styles.badge}>Wheel of life</div>
+      <h2 style={styles.title}>Where does life feel out of balance?</h2>
+      <p style={styles.subtitle}>
+        Rate each area from 1 (needs attention) to 10 (thriving). There&apos;s no right answer — just where things stand today.
+      </p>
+
+      <div style={styles.content}>
+        <div style={styles.wheelBox}>
+          <svg viewBox="0 0 340 340" width="100%" height="100%" role="img" aria-label="Wheel of life chart">
+            <g>
+              {[1, 2, 3, 4, 5].map(ring => {
+                const r = (MAX_R / 5) * ring
+                const pts = AREAS.map((_, i) => polar(i, AREAS.length, r).join(',')).join(' ')
+                return <polygon key={ring} points={pts} fill="none" stroke="#e8e3da" strokeWidth={1} />
+              })}
+            </g>
+            <g>
+              {AREAS.map((_, i) => {
+                const [x, y] = polar(i, AREAS.length, MAX_R)
+                return <line key={i} x1={CX} y1={CY} x2={x} y2={y} stroke="#e8e3da" strokeWidth={1} />
+              })}
+            </g>
+            <polygon points={polygonPoints} fill="rgba(74,124,111,0.15)" stroke="#4a7c6f" strokeWidth={2} />
+            {AREAS.map((a, i) => {
+              const [px, py] = polar(i, AREAS.length, (MAX_R / 10) * scores[a.key])
+              const [lx, ly] = polar(i, AREAS.length, MAX_R + 24)
+              return (
+                <g key={a.key}>
+                  <circle cx={px} cy={py} r={4} fill="#4a7c6f" />
+                  <text
+                    x={lx}
+                    y={ly}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    fontSize={12}
+                    fontFamily="'DM Sans', sans-serif"
+                    fill="#5a5a55"
+                  >
+                    {a.label}
+                  </text>
+                </g>
+              )
+            })}
+          </svg>
+        </div>
+
+        <div style={styles.sliders}>
+          {AREAS.map(a => (
+            <div key={a.key} style={styles.sliderRow}>
+              <label style={styles.sliderLabel}>{a.label}</label>
+              <input
+                type="range"
+                min={1}
+                max={10}
+                step={1}
+                value={scores[a.key]}
+                onChange={e => updateScore(a.key, Number(e.target.value))}
+                style={styles.range}
+              />
+              <span style={styles.sliderValue}>{scores[a.key]}</span>
+            </div>
+          ))}
+        </div>
       </div>
+
+      <button onClick={handleSave} disabled={saving} style={styles.button}>
+        {saving ? 'Saving...' : saved ? 'Saved ✓' : 'Save my wheel →'}
+      </button>
     </div>
   )
 }
 
-export default function WheelOfLifePage() {
-  return (
-    <Suspense fallback={null}>
-      <WheelOfLifePageInner />
-    </Suspense>
-  )
-}
-
 const styles: Record<string, React.CSSProperties> = {
-  page: {
-    minHeight: '100vh',
-    background: '#f7f4ef',
+  wrapper: {
+    background: 'white',
+    border: '1.5px solid #e8e3da',
+    borderRadius: 20,
+    padding: '2.5rem',
     fontFamily: "'DM Sans', sans-serif",
     color: '#1a1a18',
+    maxWidth: 720,
+    margin: '0 auto',
   },
-  nav: {
-    borderBottom: '1px solid #e8e3da',
-    padding: '1rem 2rem',
+  badge: {
+    display: 'inline-block',
+    background: '#e8f0ee',
+    color: '#2d6b5a',
+    fontSize: 11,
+    fontWeight: 500,
+    padding: '5px 12px',
+    borderRadius: 100,
+    letterSpacing: '0.5px',
+    textTransform: 'uppercase',
+    marginBottom: '1.25rem',
   },
-  brand: {
-    display: 'inline-flex',
-    alignItems: 'baseline',
-    gap: 8,
-    textDecoration: 'none',
-  },
-  brandDot: {
-    width: 7,
-    height: 7,
-    borderRadius: '50%',
-    background: '#4a7c6f',
-    marginBottom: 3,
-  },
-  brandName: {
+  title: {
     fontFamily: "'Playfair Display', serif",
-    fontSize: 22,
+    fontSize: 28,
     fontWeight: 400,
-    color: '#1a1a18',
-    letterSpacing: -0.5,
+    marginBottom: '0.5rem',
+    lineHeight: 1.2,
   },
-  wrapper: {
+  subtitle: {
+    fontSize: 14,
+    color: '#5a5a55',
+    fontWeight: 300,
+    lineHeight: 1.6,
+    marginBottom: '2rem',
+    maxWidth: 480,
+  },
+  content: {
+    display: 'flex',
+    gap: '2.5rem',
+    flexWrap: 'wrap',
+    alignItems: 'flex-start',
+  },
+  wheelBox: {
+    flex: '0 0 auto',
+    width: 300,
+    maxWidth: '100%',
+  },
+  sliders: {
+    flex: '1 1 260px',
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center',
-    padding: '3rem 1.5rem',
-    gap: '1.5rem',
+    gap: '12px',
+    minWidth: 240,
   },
-  skipLink: {
+  sliderRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+  },
+  sliderLabel: {
     fontSize: 13,
-    color: '#9a9a94',
-    textDecoration: 'none',
+    color: '#5a5a55',
+    width: 100,
+    flexShrink: 0,
+  },
+  range: {
+    flex: 1,
+    accentColor: '#4a7c6f',
+  },
+  sliderValue: {
+    fontSize: 13,
+    fontWeight: 500,
+    minWidth: 18,
+    textAlign: 'right',
+  },
+  button: {
+    marginTop: '2rem',
+    padding: '14px 28px',
+    background: '#4a7c6f',
+    color: 'white',
+    borderRadius: 100,
+    border: 'none',
+    fontSize: 15,
+    fontWeight: 500,
+    fontFamily: "'DM Sans', sans-serif",
+    cursor: 'pointer',
+    letterSpacing: '0.2px',
   },
 }
