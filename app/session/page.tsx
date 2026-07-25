@@ -22,6 +22,7 @@ interface Reflection {
   closing: string;
   quote?: string;
   quote_author?: string;
+  session_id?: string | null;
 }
 
 interface PartnerProfile {
@@ -44,6 +45,7 @@ export default function UntanglePage() {
   const [acknowledgement, setAcknowledgement] = useState("");
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
   const [reflection, setReflection] = useState<Reflection | null>(null);
+  const [sessionId, setSessionId] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [partner, setPartner] = useState<PartnerProfile | null>(null);
   const [lastSession, setLastSession] = useState<LastSession | null>(null);
@@ -163,6 +165,7 @@ export default function UntanglePage() {
       if (!res.ok) throw new Error("API error");
       const data = await res.json();
       setReflection(data);
+      setSessionId(data.session_id ?? null);
       setStage("reflection");
       track("session_completed");
     } catch {
@@ -196,6 +199,7 @@ export default function UntanglePage() {
     setAcknowledgement("");
     setAnalysis(null);
     setReflection(null);
+    setSessionId(null);
     setError("");
     setStage("dump");
   }
@@ -394,6 +398,15 @@ export default function UntanglePage() {
               You showed up for yourself today. A little untangling, daily, is enough to keep it from piling up.
             </p>
 
+            {sessionId && (
+              
+                href={`/app/wheel-of-life?sessionId=${sessionId}`}
+                style={styles.wheelLink}
+              >
+                Want to see where things stand across your life? →
+              </a>
+            )}
+
             <InstallPrompt />
 
             {error && <div style={styles.errorBox}>{error}</div>}
@@ -464,4 +477,5 @@ const styles: Record<string, React.CSSProperties> = {
   dumpText: { fontSize: 14, color: "#5a5a55", lineHeight: 1.6, marginTop: "0.75rem", fontStyle: "italic", whiteSpace: "pre-wrap" },
   captureArea: { padding: "1.5rem", background: "#f7f4ef", borderRadius: 8 },
   dailyNudge: { fontSize: 14, color: "#4a7c6f", fontWeight: 500, fontStyle: "italic", textAlign: "center", marginTop: "1.5rem", marginBottom: 0 },
+  wheelLink: { display: "block", textAlign: "center", fontSize: 14, color: "#4a7c6f", textDecoration: "underline", marginTop: "0.75rem", fontWeight: 500 },
 };

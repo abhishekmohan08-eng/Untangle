@@ -147,19 +147,31 @@ Respond ONLY with valid JSON, no markdown, no code fences. Schema: {"signals": [
       try {
         const parsed = JSON.parse(clean);
 
+        let sessionId: string | null = null;
+
         if (userId) {
-          await supabase.from("sessions").insert({
-            user_id: userId,
-            brain_dump: dump,
-            signal: signals.join(", "),
-            closing_thread: parsed.first_step,
-            closing_mood: null,
-            partner_observations: parsed.closing,
-            closing_quote: parsed.quote ? `${parsed.quote} — ${parsed.quote_author}` : null,
-          });
+          const { data: sessionRow, error: insertError } = await supabase
+            .from("sessions")
+            .insert({
+              user_id: userId,
+              brain_dump: dump,
+              signal: signals.join(", "),
+              closing_thread: parsed.first_step,
+              closing_mood: null,
+              partner_observations: parsed.closing,
+              closing_quote: parsed.quote ? `${parsed.quote} — ${parsed.quote_author}` : null,
+            })
+            .select("id")
+            .single();
+
+          if (insertError) {
+            console.error("Failed to save session:", insertError);
+          } else {
+            sessionId = sessionRow?.id ?? null;
+          }
         }
 
-        return NextResponse.json(parsed);
+        return NextResponse.json({ ...parsed, session_id: sessionId });
       } catch (parseErr) {
         console.error("Reflect JSON parse failed. Raw output:", clean);
         return NextResponse.json({ error: "Coach response malformed, please try again" }, { status: 500 });
