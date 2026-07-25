@@ -390,6 +390,10 @@ export default function UntanglePage() {
               )}
             </div>
 
+            <p style={styles.dailyNudge}>
+              You showed up for yourself today. A little untangling, daily, is enough to keep it from piling up.
+            </p>
+
             <InstallPrompt />
 
             {error && <div style={styles.errorBox}>{error}</div>}
@@ -459,4 +463,5 @@ const styles: Record<string, React.CSSProperties> = {
   dumpSummary: { fontSize: 13, color: "#5a5a55", cursor: "pointer", fontWeight: 400, listStyle: "none" },
   dumpText: { fontSize: 14, color: "#5a5a55", lineHeight: 1.6, marginTop: "0.75rem", fontStyle: "italic", whiteSpace: "pre-wrap" },
   captureArea: { padding: "1.5rem", background: "#f7f4ef", borderRadius: 8 },
+  dailyNudge: { fontSize: 14, color: "#4a7c6f", fontWeight: 500, fontStyle: "italic", textAlign: "center", marginTop: "1.5rem", marginBottom: 0 },
 };

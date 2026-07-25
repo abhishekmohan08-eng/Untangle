@@ -89,6 +89,15 @@ const styles: Record<string, React.CSSProperties> = {
     lineHeight: 1.6,
     marginBottom: '2rem',
   },
+  dailyNudge: {
+    fontSize: 14,
+    color: '#5a5a55',
+    fontWeight: 300,
+    fontStyle: 'italic',
+    lineHeight: 1.6,
+    marginTop: '-1rem',
+    marginBottom: '2rem',
+  },
   optionGrid: {
     display: 'grid',
     gridTemplateColumns: '1fr 1fr',
@@ -393,6 +402,10 @@ export default function OnboardingPage() {
 
               <p style={styles.subtitle}>
                 Your clarity partner will remember your conversations and grow with you over time.
+              </p>
+
+              <p style={styles.dailyNudge}>
+                A little untangling, daily, is enough to keep things from piling up. Even a minute or two with {finalName} can help.
               </p>
 
               <button onClick={saveAndContinue} style={styles.button} disabled={loading}>

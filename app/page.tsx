@@ -47,6 +47,9 @@ export default function LandingPage() {
             <p style={styles.heroSub}>
               Untangle is your personal clarity partner — a safe space to think out loud, find what actually matters, and come back to whenever you need it.
             </p>
+            <p style={styles.dailyNudge}>
+              A little untangling, daily. Before the knots set in.
+            </p>
             <Link href="/auth" style={styles.heroCta}>
               Meet your clarity partner →
             </Link>
@@ -228,7 +231,8 @@ const styles: Record<string, React.CSSProperties> = {
   badge: { display: "inline-block", background: "#e8f0ee", color: "#2d6b5a", fontSize: 12, fontWeight: 500, padding: "6px 14px", borderRadius: 100, letterSpacing: "0.5px", textTransform: "uppercase", marginBottom: "1.5rem" },
   heroTitle: { fontFamily: "'Playfair Display', serif", fontWeight: 400, lineHeight: 1.2, marginBottom: "1.5rem", color: "#1a1a18" },
   heroEm: { fontStyle: "italic", color: "#4a7c6f" },
-  heroSub: { fontSize: 18, color: "#5a5a55", fontWeight: 300, lineHeight: 1.7, marginBottom: "2rem", maxWidth: 460 },
+  heroSub: { fontSize: 18, color: "#5a5a55", fontWeight: 300, lineHeight: 1.7, marginBottom: "1rem", maxWidth: 460 },
+  dailyNudge: { fontSize: 15, color: "#4a7c6f", fontWeight: 500, fontStyle: "italic", lineHeight: 1.6, marginBottom: "2rem" },
   heroCta: { display: "inline-flex", alignItems: "center", padding: "16px 32px", background: "#4a7c6f", color: "white", borderRadius: 100, fontFamily: "'DM Sans', sans-serif", fontSize: 16, fontWeight: 500, textDecoration: "none", letterSpacing: "0.2px" },
   heroNote: { fontSize: 13, color: "#9a9a94", marginTop: "1rem" },
   heroCard: { background: "white", border: "1.5px solid #e8e3da", borderRadius: 20, padding: "2rem" },
