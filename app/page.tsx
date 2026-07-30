@@ -53,7 +53,7 @@ export default function LandingPage() {
             <Link href="/auth" style={styles.heroCta}>
               Meet your clarity partner →
             </Link>
-            <p style={styles.heroNote}>Free. Always. No subscriptions.</p>
+            <p style={styles.heroNote}>Free, always. Takes a minute — no credit card, no catch.</p>
           </div>
           <div style={{ flex: 1 }}>
             <div style={styles.heroCard}>
@@ -151,6 +151,48 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Built on a method */}
+      <section style={styles.methodSection}>
+        <div style={{ maxWidth: 900, margin: "0 auto" }}>
+          <p style={{ ...styles.sectionEyebrow, textAlign: "center" }}>
+            Not therapy. Not a chatbot. Something else entirely.
+          </p>
+          <h2 style={{
+            ...styles.sectionTitle,
+            fontSize: isMobile ? "30px" : "42px",
+            textAlign: "center",
+            marginBottom: "1.5rem",
+          }}>
+            Built on a method.<br />
+            <em style={styles.heroEm}>Not a prompt.</em>
+          </h2>
+          <p style={{ ...styles.methodIntro, textAlign: "center" }}>
+            Most AI wellness tools are a chatbot wearing a calm voice. Untangle is built differently — on real coaching principles, the same ones used in actual paid coaching sessions.
+          </p>
+
+          <div style={styles.methodList}>
+            {[
+              { title: "Connect before challenge.", desc: "Sage earns the right to say something hard by making sure you feel heard first. Always." },
+              { title: "The container matters more than the content.", desc: "The same truth, said the wrong way, gets rejected. Said the right way, it lands. Sage is built to get the how right, not just the what." },
+              { title: "Nothing gets flattened.", desc: "A deadline and a quiet identity crisis are not the same weight. Sage never collapses the two just to give you a tidy answer." },
+              { title: "The loudest thing isn't always the realest thing.", desc: "Sage listens for what's actually sitting underneath — not just what you led with." },
+            ].map((item, i) => (
+              <div key={i} style={styles.methodItem}>
+                <div style={styles.methodNumber}>{String(i + 1).padStart(2, "0")}</div>
+                <div>
+                  <h3 style={styles.methodTitle}>{item.title}</h3>
+                  <p style={styles.methodDesc}>{item.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <p style={{ ...styles.methodClosing, textAlign: "center" }}>
+            This isn&apos;t borrowed therapy-speak. It&apos;s a method — built by a coach, not scraped from a wellness blog.
+          </p>
+        </div>
+      </section>
+
       {/* Coach section */}
       <section style={styles.coachSection}>
         <div style={{
@@ -196,6 +238,7 @@ export default function LandingPage() {
           <Link href="/auth" style={styles.heroCta}>
             Meet your clarity partner →
           </Link>
+          <p style={styles.heroNote}>Takes a minute. No credit card needed.</p>
         </div>
       </section>
 
@@ -258,6 +301,14 @@ const styles: Record<string, React.CSSProperties> = {
   whyCard: { padding: "1.5rem", borderRadius: 16, border: "1.5px solid #e8e3da", background: "#f7f4ef" },
   whyTitle: { fontFamily: "'Playfair Display', serif", fontSize: 18, fontWeight: 400, color: "#1a1a18", marginBottom: "0.5rem" },
   whyDesc: { fontSize: 14, color: "#5a5a55", fontWeight: 300, lineHeight: 1.6 },
+  methodSection: { padding: "6rem 2rem", background: "#f0f7f5", borderTop: "1px solid #e8e3da", borderBottom: "1px solid #e8e3da" },
+  methodIntro: { fontSize: 17, color: "#5a5a55", fontWeight: 300, lineHeight: 1.7, maxWidth: 640, margin: "0 auto 3rem" },
+  methodList: { display: "flex", flexDirection: "column", gap: "2rem", marginBottom: "3rem" },
+  methodItem: { display: "flex", gap: "1.5rem", alignItems: "flex-start", background: "white", border: "1.5px solid #e8e3da", borderRadius: 16, padding: "1.75rem 2rem" },
+  methodNumber: { fontFamily: "'Playfair Display', serif", fontSize: 28, color: "#8fb5ac", fontWeight: 400, flexShrink: 0, minWidth: 40 },
+  methodTitle: { fontFamily: "'Playfair Display', serif", fontSize: 19, fontWeight: 400, fontStyle: "italic", color: "#1a1a18", marginBottom: "0.5rem", lineHeight: 1.4 },
+  methodDesc: { fontSize: 15, color: "#5a5a55", fontWeight: 300, lineHeight: 1.6 },
+  methodClosing: { fontSize: 16, color: "#4a7c6f", fontWeight: 500, fontStyle: "italic", lineHeight: 1.6, maxWidth: 560, margin: "0 auto" },
   coachSection: { background: "white", padding: "6rem 2rem", borderTop: "1px solid #e8e3da", borderBottom: "1px solid #e8e3da" },
   coachInner: { maxWidth: 1000, margin: "0 auto", display: "flex", alignItems: "center" },
   photo: { width: "100%", height: "100%", objectFit: "cover", objectPosition: "top", display: "block" },
