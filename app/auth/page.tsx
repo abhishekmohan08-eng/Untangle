@@ -3,6 +3,12 @@
 import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 
+declare global {
+  interface Window {
+    fbq?: (...args: any[]) => void
+  }
+}
+
 export default function AuthPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -27,8 +33,14 @@ export default function AuthPage() {
       else window.location.href = '/app'
     } else {
       const { error } = await supabase.auth.signUp({ email, password })
-      if (error) setMessage(error.message)
-      else window.location.href = '/onboarding'
+      if (error) {
+        setMessage(error.message)
+      } else {
+        if (typeof window !== 'undefined' && window.fbq) {
+          window.fbq('track', 'CompleteRegistration')
+        }
+        window.location.href = '/onboarding'
+      }
     }
 
     setLoading(false)
