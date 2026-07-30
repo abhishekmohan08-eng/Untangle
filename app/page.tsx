@@ -41,7 +41,7 @@ export default function LandingPage() {
               ...styles.heroTitle,
               fontSize: isMobile ? "36px" : "52px",
             }}>
-              Not another app.<br />
+              Not another wellness app.<br />
               <em style={styles.heroEm}>Someone who listens,<br />remembers, and helps you<br />find clarity.</em>
             </h1>
             <p style={styles.heroSub}>
