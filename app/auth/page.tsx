@@ -39,7 +39,9 @@ export default function AuthPage() {
         if (typeof window !== 'undefined' && window.fbq) {
           window.fbq('track', 'CompleteRegistration')
         }
-        window.location.href = '/onboarding'
+        setTimeout(() => {
+          window.location.href = '/onboarding'
+        }, 300)
       }
     }
 
