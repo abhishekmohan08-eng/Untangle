@@ -106,6 +106,7 @@ export default function UntanglePage() {
           action: "acknowledge",
           dump: dumpText,
           partnerName: partner?.partner_name || "Sage",
+          partnerStyle: partner?.partner_style || "",
         }),
       });
       if (!res.ok) throw new Error("API error");
@@ -160,6 +161,7 @@ export default function UntanglePage() {
           answer: focusAnswer,
           userId: (await supabase.auth.getUser()).data.user?.id,
           partnerName: partner?.partner_name || "Sage",
+          partnerStyle: partner?.partner_style || "",
         }),
       });
       if (!res.ok) throw new Error("API error");
@@ -399,7 +401,7 @@ export default function UntanglePage() {
             </p>
 
             {sessionId && (
-              <a
+              
                 href={"/app/wheel-of-life?sessionId=" + sessionId}
                 style={styles.wheelLink}
               >

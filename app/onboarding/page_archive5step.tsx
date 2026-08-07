@@ -87,16 +87,7 @@ const styles: Record<string, React.CSSProperties> = {
     color: '#5a5a55',
     fontWeight: 300,
     lineHeight: 1.6,
-    marginBottom: '1.5rem',
-  },
-  sectionLabel: {
-    fontSize: 12,
-    fontWeight: 500,
-    letterSpacing: '0.5px',
-    textTransform: 'uppercase',
-    color: '#9a9a94',
-    marginBottom: '0.75rem',
-    marginTop: '1.5rem',
+    marginBottom: '2rem',
   },
   dailyNudge: {
     fontSize: 14,
@@ -104,13 +95,14 @@ const styles: Record<string, React.CSSProperties> = {
     fontWeight: 300,
     fontStyle: 'italic',
     lineHeight: 1.6,
-    marginBottom: '0.5rem',
+    marginTop: '-1rem',
+    marginBottom: '2rem',
   },
   optionGrid: {
     display: 'grid',
     gridTemplateColumns: '1fr 1fr',
     gap: 12,
-    marginBottom: '0.5rem',
+    marginBottom: '2rem',
   },
   option: {
     padding: '14px 16px',
@@ -148,6 +140,21 @@ const styles: Record<string, React.CSSProperties> = {
     outline: 'none',
     boxSizing: 'border-box',
   },
+  textarea: {
+    width: '100%',
+    padding: '14px 16px',
+    marginBottom: '12px',
+    borderRadius: 10,
+    border: '1.5px solid #e8e3da',
+    fontSize: 15,
+    fontFamily: "'DM Sans', sans-serif",
+    background: '#f7f4ef',
+    color: '#1a1a18',
+    outline: 'none',
+    boxSizing: 'border-box',
+    minHeight: '120px',
+    resize: 'vertical',
+  },
   button: {
     width: '100%',
     padding: '14px',
@@ -159,14 +166,25 @@ const styles: Record<string, React.CSSProperties> = {
     fontWeight: 500,
     fontFamily: "'DM Sans', sans-serif",
     cursor: 'pointer',
-    marginTop: '1.5rem',
     letterSpacing: '0.2px',
+  },
+  skipButton: {
+    width: '100%',
+    padding: '12px',
+    background: 'transparent',
+    color: '#9a9a94',
+    borderRadius: 100,
+    border: 'none',
+    fontSize: 14,
+    fontFamily: "'DM Sans', sans-serif",
+    cursor: 'pointer',
+    marginTop: '8px',
   },
   sageMessage: {
     background: '#e8f0ee',
     borderRadius: 16,
     padding: '1.5rem',
-    marginBottom: '1.5rem',
+    marginBottom: '2rem',
     fontSize: 16,
     color: '#2d6b5a',
     fontStyle: 'italic',
@@ -184,16 +202,18 @@ const styles: Record<string, React.CSSProperties> = {
 
 export default function OnboardingPage() {
   const [step, setStep] = useState(1)
+  const [partnerName, setPartnerName] = useState('Sage')
   const [customName, setCustomName] = useState('')
   const [useCustomName, setUseCustomName] = useState(false)
   const [partnerStyle, setPartnerStyle] = useState('')
+  const [supportNeed, setSupportNeed] = useState('')
+  const [userIntro, setUserIntro] = useState('')
   const [loading, setLoading] = useState(false)
 
   const finalName = useCustomName && customName.trim() ? customName.trim() : 'Sage'
-  const totalSteps = 2
 
   const saveAndContinue = async () => {
-    if (step < 2) {
+    if (step < 5) {
       setStep(step + 1)
       return
     }
@@ -207,13 +227,15 @@ export default function OnboardingPage() {
         user_id: user.id,
         partner_name: finalName,
         partner_style: partnerStyle,
-        support_need: '',
-        user_intro: '',
+        support_need: supportNeed,
+        user_intro: userIntro,
       })
     }
 
     window.location.href = '/app'
   }
+
+  const totalSteps = 5
 
   return (
     <div style={styles.page}>
@@ -240,16 +262,18 @@ export default function OnboardingPage() {
             ))}
           </div>
 
-          {/* Step 1 — Meet Sage + name + style combined */}
+          {/* Step 1 — Meet Sage */}
           {step === 1 && (
             <>
               <div style={styles.badge}>Your clarity partner</div>
               <h1 style={styles.title}>Meet Sage</h1>
               <p style={styles.subtitle}>
-                Sage is here to listen, help you make sense of things, and grow with you over time.
+                Sage is your personal clarity partner — here to listen, help you make sense of things, and grow with you over time.
+              </p>
+              <p style={styles.subtitle}>
+                Would you like to keep the name Sage, or choose your own?
               </p>
 
-              <div style={styles.sectionLabel}>Keep the name, or choose your own</div>
               <div style={styles.optionGrid}>
                 <div
                   style={useCustomName ? styles.option : styles.optionSelected}
@@ -264,6 +288,7 @@ export default function OnboardingPage() {
                   Choose my own
                 </div>
               </div>
+
               {useCustomName && (
                 <input
                   type="text"
@@ -274,7 +299,21 @@ export default function OnboardingPage() {
                 />
               )}
 
-              <div style={styles.sectionLabel}>How should {finalName} be with you?</div>
+              <button onClick={() => setStep(2)} style={styles.button}>
+                Continue →
+              </button>
+            </>
+          )}
+
+          {/* Step 2 — Partner style */}
+          {step === 2 && (
+            <>
+              <div style={styles.badge}>How {finalName} shows up</div>
+              <h1 style={styles.title}>How would you like {finalName} to be with you?</h1>
+              <p style={styles.subtitle}>
+                Choose the style that feels most natural to you.
+              </p>
+
               <div style={styles.optionGrid}>
                 {['Gentle & nurturing', 'Calm & grounding', 'Direct & honest', 'Curious & exploratory'].map(option => (
                   <div
@@ -288,17 +327,71 @@ export default function OnboardingPage() {
               </div>
 
               <button
-                onClick={() => partnerStyle && setStep(2)}
+                onClick={() => partnerStyle && setStep(3)}
                 style={{ ...styles.button, opacity: partnerStyle ? 1 : 0.5 }}
-                disabled={!partnerStyle}
               >
                 Continue →
               </button>
             </>
           )}
 
-          {/* Step 2 — Sage introduces itself */}
-          {step === 2 && (
+          {/* Step 3 — Support need */}
+          {step === 3 && (
+            <>
+              <div style={styles.badge}>What you need</div>
+              <h1 style={styles.title}>When things feel heavy, what helps you most?</h1>
+              <p style={styles.subtitle}>
+                {finalName} will remember this and show up accordingly.
+              </p>
+
+              <div style={styles.optionGrid}>
+                {['Just listen', 'Help me make sense of things', 'Challenge me gently', 'Help me take action'].map(option => (
+                  <div
+                    key={option}
+                    style={supportNeed === option ? styles.optionSelected : styles.option}
+                    onClick={() => setSupportNeed(option)}
+                  >
+                    {option}
+                  </div>
+                ))}
+              </div>
+
+              <button
+                onClick={() => supportNeed && setStep(4)}
+                style={{ ...styles.button, opacity: supportNeed ? 1 : 0.5 }}
+              >
+                Continue →
+              </button>
+            </>
+          )}
+
+          {/* Step 4 — User intro */}
+          {step === 4 && (
+            <>
+              <div style={styles.badge}>A little about you</div>
+              <h1 style={styles.title}>Is there anything you'd like {finalName} to know before you begin?</h1>
+              <p style={styles.subtitle}>
+                This is optional — but anything you share helps {finalName} understand you better from the start.
+              </p>
+
+              <textarea
+                placeholder="Share whatever feels right..."
+                value={userIntro}
+                onChange={e => setUserIntro(e.target.value)}
+                style={styles.textarea}
+              />
+
+              <button onClick={() => setStep(5)} style={styles.button}>
+                Continue →
+              </button>
+              <button onClick={() => setStep(5)} style={styles.skipButton}>
+                Skip for now
+              </button>
+            </>
+          )}
+
+          {/* Step 5 — Sage introduces itself */}
+          {step === 5 && (
             <>
               <div style={styles.badge}>You're all set</div>
               <h1 style={styles.title}>{finalName} is ready for you</h1>
@@ -306,6 +399,10 @@ export default function OnboardingPage() {
               <div style={styles.sageMessage}>
                 "Hello. I'm {finalName}, and I'm here for you — whenever you need to think something through, find clarity, or just feel heard. There's no rush. Whenever you're ready, I'm listening."
               </div>
+
+              <p style={styles.subtitle}>
+                Your clarity partner will remember your conversations and grow with you over time.
+              </p>
 
               <p style={styles.dailyNudge}>
                 A little untangling, daily, is enough to keep things from piling up. Even a minute or two with {finalName} can help.

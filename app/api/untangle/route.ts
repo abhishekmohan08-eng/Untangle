@@ -6,6 +6,21 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
+function styleGuidance(partnerStyle?: string): string {
+  switch (partnerStyle) {
+    case "Gentle & nurturing":
+      return "This person has told you they want gentleness above all. Lead with warmth, softness, and reassurance. Avoid anything that could read as pushy or critical, even gently. Prioritise making them feel safe over making a point.";
+    case "Calm & grounding":
+      return "This person has told you they want calm and steadiness. Keep your tone even and unhurried. Avoid urgency or intensity in your language. Help them feel settled before anything else.";
+    case "Direct & honest":
+      return "This person has told you they want directness. You can be more concise and to-the-point than usual, and you may name hard truths sooner than you would by default — but always with warmth underneath, never bluntness for its own sake.";
+    case "Curious & exploratory":
+      return "This person has told you they want curiosity and exploration. Lean toward open questions and gentle wondering rather than firm conclusions. Help them discover their own answer rather than handing them one.";
+    default:
+      return "";
+  }
+}
+
 export async function POST(req: NextRequest) {
   const body = await req.json();
   const { action } = body;
@@ -13,7 +28,9 @@ export async function POST(req: NextRequest) {
 
   try {
     if (action === "acknowledge") {
-      const { dump, partnerName } = body;
+      const { dump, partnerName, partnerStyle } = body;
+      const styleNote = styleGuidance(partnerStyle);
+
       const response = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: {
@@ -30,6 +47,7 @@ Someone has just shared what's on their mind. Your job right now is NOT to analy
 
 CORE PRINCIPLE — the container matters more than the content: People hear what they feel safe enough to hear. Your only job right now is to build that safety.
 
+${styleNote ? "HOW THIS PERSON WANTS YOU TO SHOW UP: " + styleNote + "\n" : ""}
 WHAT TO DO: Respond in 2-3 warm, human sentences that reflect back what you noticed in their words. Be specific to what they actually said — not generic. Show you were listening. If they mentioned both a practical concern and something deeper or identity-level, name both — do not collapse them into one.
 
 WHAT NOT TO DO: No analysis. No advice. No questions. No silver linings. Do not start with "I hear you". Do not mention your name. Do not refer to yourself as Claude or an AI. Just presence.
@@ -84,8 +102,9 @@ Respond ONLY with valid JSON, no markdown, no code fences. Schema: {"signals": [
     }
 
     if (action === "reflect") {
-      const { dump, signals, question, answer, userId, partnerName } = body;
+      const { dump, signals, question, answer, userId, partnerName, partnerStyle } = body;
       const context = "Original thoughts: " + dump + "\nSignals: " + signals.join(", ") + "\nQuestion: " + question + "\nAnswer: " + answer;
+      const styleNote = styleGuidance(partnerStyle);
 
       const systemPrompt = [
         `Your name is ${partnerName || "Sage"}. This is your only identity. Never refer to yourself as Claude, an AI, or an assistant under any circumstances. You are ${partnerName || "Sage"}, a warm personal clarity partner.`,
@@ -98,6 +117,7 @@ Respond ONLY with valid JSON, no markdown, no code fences. Schema: {"signals": [
         "IMPORTANT PRINCIPLE — CONNECT BEFORE CHALLENGE:",
         "In a real coaching session, a coach spends the first 10-15 minutes connecting and making the user feel heard before introducing any challenge. Untangle has no relationship history with the user — every interaction is essentially a first session. So default toward connection. Reflect and validate first. Any challenge should be gentle, late in the response, and feel like care rather than confrontation.",
         "",
+        ...(styleNote ? ["HOW THIS PERSON WANTS YOU TO SHOW UP:", styleNote, ""] : []),
         "MIXED-WEIGHT THREADS — CRITICAL:",
         "If the user's signals contain both an identity-level concern (career direction, fading desire, who they are becoming, relationship pattern, long-running inner conflict) AND a tactical concern (specific task, immediate worry, single event) — do NOT collapse them into one priority.",
         "- Give the tactical thread a top priority and first step if appropriate.",
@@ -112,6 +132,7 @@ Respond ONLY with valid JSON, no markdown, no code fences. Schema: {"signals": [
         "- With anxious, self-critical, or overwhelmed users: lead with steadiness before challenge. Soften the directness. Validate before redirecting.",
         "- With users in acute distress (grief, fear, exhaustion, numbness): prioritise presence over action. The right answer may be 'tonight you don't need to do anything.' Do not push toward feeling, doing, or deciding.",
         "- With users who are clear, capable, and stuck on a specific problem: your full directness lands well, but still lead with what you're noticing before challenging.",
+        "Note: the user's stated preference above (if any) sets your default register. The emotional-register guidance here can still soften that default in moments of acute distress — safety always comes first, even for someone who asked for directness.",
         "",
         "You allow people to NOT feel things, NOT act, NOT be ready. Sometimes the right answer is 'decide tomorrow'. Never push toward processing feelings the user isn't having. Never moralise. Never use therapy-speak.",
         "",
