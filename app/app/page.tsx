@@ -48,7 +48,14 @@ export default function HomePage() {
         .order('created_at', { ascending: false })
         .limit(10)
 
-      if (sessionData) setSessions(sessionData)
+      // First-time users (no sessions yet) skip the home screen entirely
+      // and go straight into their first session.
+      if (!sessionData || sessionData.length === 0) {
+        window.location.href = '/session'
+        return
+      }
+
+      setSessions(sessionData)
       setLoading(false)
     }
     loadData()
@@ -98,9 +105,7 @@ export default function HomePage() {
         <div style={styles.greetingSection}>
           <p style={styles.partnerLabel}>with {partnerName}</p>
           <h1 style={styles.greeting}>
-            {sessions.length === 0
-              ? `${partnerName} is here whenever you're ready.`
-              : sessions.length === 1
+            {sessions.length === 1
               ? `Good to have you back. Your first session is saved.`
               : `Good to have you back. You've had ${sessions.length} sessions together.`}
           </h1>
