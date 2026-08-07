@@ -401,7 +401,7 @@ export default function UntanglePage() {
             </p>
 
             {sessionId && (
-              
+              <a
                 href={"/app/wheel-of-life?sessionId=" + sessionId}
                 style={styles.wheelLink}
               >
